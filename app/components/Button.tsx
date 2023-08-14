@@ -45,7 +45,7 @@ export default function Button(props: ButtonProps) {
 
 const defaultContainerStyles = (disabled: boolean) =>
   [
-    disabled ? "bg-slate-200" : "bg-mvlightgreen",
+    disabled ? "bg-slate-200" : "bg-maindark",
     "text-white",
     "font-bold",
     "rounded",
@@ -53,24 +53,24 @@ const defaultContainerStyles = (disabled: boolean) =>
     "flex",
     "justify-center",
     "items-center",
-    disabled ? "" : "hover:bg-mvlightgreen-accent",
+    disabled ? "" : "hover:bg-maindark/[0.8]",
     disabled ? "cursor-default" : "cursor-pointer",
   ].join(" ");
 
 const outlineContainerStyles = (disabled: boolean) =>
   [
     "bg-transparent",
-    disabled ? "text-zinc-400" : "text-mvlightgreen",
+    disabled ? "text-zinc-400" : "text-main",
     "font-bold",
     "rounded",
     "py-2",
     "flex",
     "justify-center",
     "items-center",
-    disabled ? "" : "hover:bg-mvlightgreen-accent/20",
+    disabled ? "" : "hover:bg-maindark",
     disabled ? "cursor-default" : "cursor-pointer",
     "border",
-    disabled ? "border-zinc-200" : "border-mvlightgreen",
+    disabled ? "border-zinc-200" : "border-main",
   ].join(" ");
 
 const simpleContainerStyles = [
