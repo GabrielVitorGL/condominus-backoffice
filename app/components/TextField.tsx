@@ -59,6 +59,7 @@ export default function TextField(props: TextFieldProps) {
         onFocus={() => setActive(true)}
         onBlur={() => setActive(value.length > 0)}
         className={inputStyles(!!error, color, !!fullBorder)}
+        style={{WebkitBoxShadow: "0 0 0px 1000px #3C9FAC inset", WebkitTextFillColor: "white"}}
       />
     </div>
   );
