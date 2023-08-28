@@ -2,8 +2,7 @@
 import Image from "next/image";
 import TextField from "./components/TextField";
 import Button from "./components/Button";
-import PersonIcon from "@mui/icons-material/Person";
-import LockIcon from "@mui/icons-material/Lock";
+import {Person,Lock} from "@mui/icons-material/";
 import { useState } from "react";
 import CondominusLogo from "./assets/logo.png";
 import { useRouter } from "next/navigation";
@@ -67,7 +66,7 @@ function LoginContent({
       <TextField
         name="username"
         label="E-mail"
-        icon={PersonIcon}
+        icon={<Person/>}
         type="email"
         className="mb-10 text-white"
         error={authError}
@@ -76,7 +75,7 @@ function LoginContent({
       <TextField
         name="password"
         label="Senha"
-        icon={LockIcon}
+        icon={<Lock/>}
         type="password"
         className="mb-7 text-white"
         error={authError}
@@ -143,9 +142,9 @@ function ResetPasswordContent({
       <TextField
         name="username"
         label="E-mail"
-        icon={PersonIcon}
+        icon={<Person/>}
         type="email"
-        className="mb-4"
+        className="mb-4 text-white"
         required
       />
       <div className="max-w-full text-center">

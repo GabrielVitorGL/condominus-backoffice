@@ -46,7 +46,7 @@ export default function TextField(props: TextFieldProps) {
 
   return (
     <div className={`${containerStyles(!!error, color, !!fullBorder, !!disabled)} ${className}`} {...rest}>
-      {icon && <Image src={icon} alt="" width={16} style={iconStyle} />}
+      {icon}
       <span className={labelStyles(isActive, !!error, color, !!fullBorder)}>{label}</span>
       <input
         key={(!!error).toString()} // Force re-render when error changes (see https://mdbootstrap.com/support/standard/input-field-label-doesnt-update-styles-when-value-set-programmatically/)
@@ -91,8 +91,8 @@ const labelStyles = function (
     "pointer-events-none",
     "ease-out",
     "duration-200",
-    isActive ? "translate-x-0" : "translate-x-6",
-    isActive ? "-translate-y-5" : "translate-y-0",
+    isActive ? "translate-x-0" : "translate-x-8",
+    isActive ? "-translate-y-[1.65rem]" : "translate-y-0",
     isActive ? "text-2xs" : "",
     fullBorder ? "font-normal" : "",
     fullBorder ? "translate-x-4" : "",
