@@ -1,3 +1,4 @@
+"use client"
 import Spinner from "./Spinner";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
