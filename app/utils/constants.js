@@ -1,1 +1,1 @@
-export const BASE_URL = "https://api.publicapis.org"
+export const BASE_URL = "http://condominus-api.somee.com/CondominusApi"
