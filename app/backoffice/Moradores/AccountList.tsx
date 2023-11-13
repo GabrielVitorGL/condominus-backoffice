@@ -77,6 +77,7 @@ const AccountListActions = () => {
 };
 
 const AccountList = () => {
+  const accountId = "a"
   return (
     <PrivatePage>
       <NavigationHeader
@@ -86,7 +87,7 @@ const AccountList = () => {
         <span style={{fontWeight: 700, fontSize: "26px"}}>Contas</span>
         <div className="bg-main" style={{marginTop: "-2px", height: "3px"}} />
 
-        <List actions={<AccountListActions />} component="div">
+        <List actions={<AccountListActions />} component="div" resource={`accounts/${accountId}/moradores`}>
           <AccountListInnerComponent />
         </List>
         <AccountDetails />

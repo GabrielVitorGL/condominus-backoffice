@@ -2,10 +2,11 @@
 import Image from "next/image";
 import TextField from "./components/TextField";
 import Button from "./components/Button";
-import {Person,Lock} from "@mui/icons-material/";
-import { useState } from "react";
+import { Person, Lock } from "@mui/icons-material/";
+import { SetStateAction, useState } from "react";
 import CondominusLogo from "./assets/logo.png";
 import { useRouter } from "next/navigation";
+import authProvider from "./backoffice/authProvider";
 
 export default function Login() {
   const [activeContent, setActiveContent] = useState<"login" | "resetPassword">(
@@ -46,39 +47,56 @@ function LoginContent({
 }) {
   const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(false);
-  const [authError, setAuthError] = useState<boolean>(false);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
-    setAuthError(false);
     setErrorMessages([]);
 
     const formData = new FormData(event.target as HTMLFormElement);
     const formObject = Object.fromEntries(formData.entries());
 
+    try {
+      await authProvider.login({
+        username: formObject.username as string,
+        password: formObject.password as string,
+      });
+    } catch (error) {
+      const cause = (error as Error).cause;
+
+      if (cause && typeof cause === 'object' && 'messages' in cause) {
+        setErrorMessages(cause.messages as SetStateAction<string[]>);
+      }
+
+      setLoading(false);
+      return;
+    }
+
     router.push("/backoffice");
   };
 
   return (
-    <form onSubmit={onSubmit} className="relative flex w-80 h-80 flex-col items-center">
+    <form
+      onSubmit={onSubmit}
+      className="relative flex w-80 h-80 flex-col items-center"
+    >
       <TextField
         name="username"
         label="E-mail"
-        icon={<Person/>}
+        icon={<Person />}
         type="email"
         className="mb-10 text-white"
-        error={authError}
+        error={!!errorMessages}
         required
       />
       <TextField
         name="password"
         label="Senha"
-        icon={<Lock/>}
+        icon={<Lock />}
         type="password"
         className="mb-7 text-white"
-        error={authError}
+        error={!!errorMessages}
         required
       />
       {errorMessages.length > 0 && (
@@ -142,7 +160,7 @@ function ResetPasswordContent({
       <TextField
         name="username"
         label="E-mail"
-        icon={<Person/>}
+        icon={<Person />}
         type="email"
         className="mb-4 text-white"
         required
