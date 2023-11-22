@@ -5,27 +5,18 @@ import { BASE_URL } from "../utils/constants";
 const authProvider = {
   login: ({ username, password }) => {
     //TODO: MUDAR
-    let username2 = "UsuarioAdmin";
+    // https://chat.openai.com/share/31ec447f-0435-4c1d-bf50-f15395f53910
     const params = {
-      nome: username2,
+      nome: username,
       passwordString: password,
     };
 
-    // this function is called by the login/callback page
-    // it will send the authorization code came into the oauth2 request
-    // to the API to receive a new access_token, to be stored into localStorage
-    return axios
-      .post(`${BASE_URL}/Usuarios/Autenticar`, [
+    return axios.post(BASE_URL + "/Usuarios/Autenticar", 
         {
-          nome: username2,
+          nome: "UsuarioAdmin",
           passwordString: password,
         },
-      ], [
-        {
-          nome: username2,
-          passwordString: password,
-        },
-      ])
+       )
       .then((res) => {
         const { token } = res.data;
         localStorage.setItem("accessToken", token);
@@ -35,10 +26,12 @@ const authProvider = {
         throw error;
       });
   },
+
   logout: () => {
     // see the logout page
     return Promise.resolve();
   },
+
   checkError: (error) => {
     // this function checks HTTP error and exceptions
     // if it returns an error code 401 or 403, it means the user is not logged in
@@ -57,6 +50,7 @@ const authProvider = {
     localStorage.removeItem("accessToken");
     return Promise.reject();
   },
+
   checkAuth: () => {
     // this function checks if the user has an accessToken on localStorage
     // if it has, this tells us that the user has a token.
@@ -74,7 +68,9 @@ const authProvider = {
 
     return Promise.reject();
   },
+
   getPermissions: () => Promise.resolve(),
+
   getIdentity: () => {
     const token = localStorage.getItem("accessToken");
     return new Promise((resolve, reject) => {
@@ -93,8 +89,11 @@ const authProvider = {
         .catch((e) => reject(e));
     });
   },
+
   getAuthURL: () => axios.get(`${BASE_URL}/auth/backoffice/authorization_url`),
+
   setLogoutURL: (logoutUri) => localStorage.setItem("logoutURL", logoutUri),
+
   getLogoutURL: () => localStorage.getItem("logoutURL"),
 };
 

@@ -64,6 +64,8 @@ function LoginContent({
       });
     } catch (error) {
       const cause = (error as Error).cause;
+      console.log(error);
+      console.log(cause);
 
       if (cause && typeof cause === 'object' && 'messages' in cause) {
         setErrorMessages(cause.messages as SetStateAction<string[]>);
