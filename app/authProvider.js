@@ -1,25 +1,20 @@
 import axios from "axios";
 
-import { BASE_URL } from "../utils/constants";
+import { BASE_URL } from "./utils/constants";
 
 const authProvider = {
   login: ({ username, password }) => {
-    //TODO: MUDAR
-    // https://chat.openai.com/share/31ec447f-0435-4c1d-bf50-f15395f53910
     const params = {
-      nome: username,
+      email: username,
       passwordString: password,
     };
 
-    return axios.post(BASE_URL + "/Usuarios/Autenticar", 
-        {
-          nome: "UsuarioAdmin",
-          passwordString: password,
-        },
-       )
+    return axios
+      .post(BASE_URL + "/Usuarios/Autenticar", params)
       .then((res) => {
-        const { token } = res.data;
+        const { token, nome } = res.data;
         localStorage.setItem("accessToken", token);
+        localStorage.setItem("username", nome);
       })
       .catch((error) => {
         console.error("Erro na autenticação: ", error);
@@ -28,7 +23,8 @@ const authProvider = {
   },
 
   logout: () => {
-    // see the logout page
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("username");
     return Promise.resolve();
   },
 
@@ -48,6 +44,7 @@ const authProvider = {
 
     // not logged in the API, so remove the token if exists
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("username");
     return Promise.reject();
   },
 
@@ -70,25 +67,6 @@ const authProvider = {
   },
 
   getPermissions: () => Promise.resolve(),
-
-  getIdentity: () => {
-    const token = localStorage.getItem("accessToken");
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`${BASE_URL}/backoffice/user/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          const { name } = res.data;
-          resolve({
-            ...res.data,
-            fullName: name,
-            avatar: name ? name[0].toUpperCase() : "",
-          });
-        })
-        .catch((e) => reject(e));
-    });
-  },
 
   getAuthURL: () => axios.get(`${BASE_URL}/auth/backoffice/authorization_url`),
 

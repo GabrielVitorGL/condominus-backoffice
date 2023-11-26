@@ -1,15 +1,14 @@
 import axios from "axios";
 
-import { BASE_URL } from "../utils/constants";
+import { BASE_URL } from "./utils/constants";
 
 export const dataProvider = {
   getList: (resource, params) => {
     console.log(resource, params);
-    const { page, perPage } = params.pagination;
-    const { hidePeerbnkPartner, ...paramFilters } = params.filter;
+    const { ...paramFilters } = params.filter;
     const { q } = paramFilters;
 
-    let url = `${BASE_URL}/backoffice/api/v1/${resource}?`;
+    let url = `${BASE_URL}/${resource}?`;
 
     if (q) url += `&name=${q}`;
     Object.keys(paramFilters).forEach((key) => {
@@ -27,7 +26,6 @@ export const dataProvider = {
       url += `&${keyNameMap[key]}=${params.sort[key]}`;
     });
 
-    if (page && perPage) url += `&page=${page}&per_page=${perPage}`;
     const options = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -37,22 +35,12 @@ export const dataProvider = {
       axios
         .get(url, options)
         .then((res) => {
-          if (hidePeerbnkPartner) {
-            // To avoid confusion we're excluding the Peerbnk partner in HML. But because
-            // we haven't cleaned up the data in the database, we're just hiding the option
-            // here in the front-end for now.
-            resolve({
-              data: res.data.entries.filter(
-                (entry) =>
-                  entry.peerbnk_id !== "5557d18d-16fe-48bd-bb14-bbdd6354ab02"
-              ),
-              total: res.data.pagination.total_entries_size - 1,
-            });
-          }
+          console.log(res.total);
           resolve({
-            data: res.data.entries,
-            pagination: res.data.pagination,
-            total: res.data.pagination.total_entries_size,
+            data: res.data,
+            total: 1,
+            //pagination: res.data.pagination,
+            //total: res.data.pagination.total_entries_size,
           });
         })
         .catch((e) => reject(e));
@@ -61,7 +49,7 @@ export const dataProvider = {
   getMany: (resource, params) => {
     console.log(resource, params);
     const { ids } = params;
-    let url = `${BASE_URL}/backoffice/api/v1/${resource}?ids=${ids.join(",")}`;
+    let url = `${BASE_URL}/${resource}?ids=${ids.join(",")}`;
     const options = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -87,7 +75,7 @@ export const dataProvider = {
     };
     return new Promise((resolve, reject) => {
       axios
-        .get(`${BASE_URL}/backoffice/api/v1/${resource}/${params.id}`, options)
+        .get(`${BASE_URL}/${resource}/${params.id}`, options)
         .then((res) => {
           resolve({ data: res.data });
         })
@@ -97,7 +85,7 @@ export const dataProvider = {
   create: (resource, params) => {
     console.log(resource, params);
     const { data } = params;
-    let url = `${BASE_URL}/backoffice/api/v1/${resource}`;
+    let url = `${BASE_URL}/${resource}`;
     const options = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -115,7 +103,7 @@ export const dataProvider = {
   update: (resource, params) => {
     console.log(resource, params);
     const { id, data } = params;
-    let url = `${BASE_URL}/backoffice/api/v1/${resource}/${id}`;
+    let url = `${BASE_URL}/${resource}/${id}`;
     const options = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -139,10 +127,7 @@ export const dataProvider = {
     };
     return new Promise((resolve, reject) => {
       axios
-        .get(
-          `${BASE_URL}/backoffice/api/v1/lenders/${lenderId}/config`,
-          options
-        )
+        .get(`${BASE_URL}/lenders/${lenderId}/config`, options)
         .then((res) => {
           resolve({ data: res.data });
         })
@@ -157,11 +142,7 @@ export const dataProvider = {
     };
     return new Promise((resolve, reject) => {
       axios
-        .put(
-          `${BASE_URL}/backoffice/api/v1/lenders/${lenderId}/config`,
-          data,
-          options
-        )
+        .put(`${BASE_URL}/lenders/${lenderId}/config`, data, options)
         .then((res) => {
           resolve({ data: res.data });
         })
@@ -176,10 +157,7 @@ export const dataProvider = {
     };
     return new Promise((resolve, reject) => {
       axios
-        .get(
-          `${BASE_URL}/backoffice/api/v1/lender_bank_accounts?lender_id=${lenderId}`,
-          options
-        )
+        .get(`${BASE_URL}/lender_bank_accounts?lender_id=${lenderId}`, options)
         .then((res) => {
           resolve({ data: res.data.entries });
         })
@@ -194,10 +172,7 @@ export const dataProvider = {
     };
     return new Promise((resolve, reject) => {
       axios
-        .get(
-          `${BASE_URL}/backoffice/api/v1/lenders/${lenderId}/sponsor_taxes`,
-          options
-        )
+        .get(`${BASE_URL}/lenders/${lenderId}/sponsor_taxes`, options)
         .then((res) => {
           resolve({ data: res.data.entries });
         })
@@ -212,10 +187,7 @@ export const dataProvider = {
     };
     return new Promise((resolve, reject) => {
       axios
-        .get(
-          `${BASE_URL}/backoffice/api/v1/partner_lenders?partner_id=${partnerId}`,
-          options
-        )
+        .get(`${BASE_URL}/partner_lenders?partner_id=${partnerId}`, options)
         .then((res) => {
           resolve({ data: res.data.entries });
         })
@@ -230,10 +202,7 @@ export const dataProvider = {
     };
     return new Promise((resolve, reject) => {
       axios
-        .get(
-          `${BASE_URL}/backoffice/api/v1/accounts/${accountId}/details`,
-          options
-        )
+        .get(`${BASE_URL}/accounts/${accountId}/details`, options)
         .then((res) => {
           resolve({ data: res.data });
         })
@@ -243,7 +212,7 @@ export const dataProvider = {
   // Expects resources in the format [["accounts", <account_id>], ["sponsor_settings"]]
   getResource: (resources) => {
     const path = resources.flat().join("/");
-    return axios.get(`${BASE_URL}/backoffice/api/v1/${path}`, {
+    return axios.get(`${BASE_URL}/${path}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
@@ -252,12 +221,24 @@ export const dataProvider = {
   // Expects resources in the format [["accounts", <account_id>], ["sponsor_settings"]]
   updateResource: (resources, updatedObj) => {
     const path = resources.flat().join("/");
-    return axios.put(`${BASE_URL}/backoffice/api/v1/${path}`, updatedObj, {
+    return axios.put(`${BASE_URL}/${path}`, updatedObj, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     });
   },
+
+  // Not implemented
+  getManyReference: (resource, params) => Promise.resolve({ data }),
+  // Not implemented
+  updateMany: (resource, params) => Promise.resolve({ data }),
+
+  // Not implemented
+  delete: (resource, params) => Promise.resolve({ data }),
+
+  // Not implemented
+  deleteMany: (resource, params) => Promise.resolve({ data }),
+
   advancementsAction: (type, advancementsIds) => {
     const options = {
       headers: {
@@ -266,7 +247,7 @@ export const dataProvider = {
     };
     return axios
       .put(
-        `${BASE_URL}/backoffice/api/v1/advancements/approve?ids=${advancementsIds}${
+        `${BASE_URL}/advancements/approve?ids=${advancementsIds}${
           type === "mark_as_sold" ? "&skip_processing=true" : ""
         }`,
         {},
@@ -283,7 +264,7 @@ export const dataProvider = {
     return new Promise((resolve, reject) => {
       axios
         .post(
-          `${BASE_URL}/backoffice/api/v1/sold_payables/${soldPayableId}/liquidate`,
+          `${BASE_URL}/sold_payables/${soldPayableId}/liquidate`,
           data,
           options
         )
@@ -326,11 +307,7 @@ export const dataProvider = {
     );
 
     return axios
-      .post(
-        `${BASE_URL}/backoffice/api/v1/accounts/spreadsheet`,
-        formData,
-        options
-      )
+      .post(`${BASE_URL}/accounts/spreadsheet`, formData, options)
       .then((res) => Promise.resolve({ data: res.data }));
   },
 
@@ -348,10 +325,7 @@ export const dataProvider = {
     };
 
     return axios
-      .get(
-        `${BASE_URL}/backoffice/api/v1/payables/${payableId}/documents`,
-        options
-      )
+      .get(`${BASE_URL}/payables/${payableId}/documents`, options)
       .then((res) => {
         const link = document.createElement("a");
         link.href = window.URL.createObjectURL(new Blob([res.data]));
@@ -363,56 +337,6 @@ export const dataProvider = {
       });
   },
 
-  markNotificationAsRead: (notificationId) => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    };
-
-    const data = {
-      mark_all: !notificationId,
-      notification_id: notificationId,
-    };
-
-    return axios
-      .put(
-        `${BASE_URL}/backoffice/api/v1/notifications/mark_as_read`,
-        data,
-        options
-      )
-      .then((res) => {
-        return { data: res.data };
-      });
-  },
-
-  getNotifications: (params) => {
-    const { page, perPage } = params.pagination;
-    const { ...paramFilters } = params.filter;
-
-    let url = `${BASE_URL}/backoffice/api/v1/notifications?`;
-
-    Object.keys(paramFilters).forEach((key) => {
-      if (key !== "q" && paramFilters[key]) {
-        url += `&${key}=${paramFilters[key]}`;
-      }
-    });
-
-    if (page && perPage) url += `&page=${page}&per_page=${perPage}`;
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    };
-    return axios.post(url, {}, options).then((res) => {
-      return {
-        data: res.data.entries,
-        pagination: res.data.pagination,
-        total: res.data.pagination.total_entries_size,
-      };
-    });
-  },
-
   payableDocumentCancel: (payableId) => {
     const options = {
       headers: {
@@ -421,11 +345,7 @@ export const dataProvider = {
     };
 
     return axios
-      .post(
-        `${BASE_URL}/backoffice/api/v1/payables/${payableId}/upload/cancel`,
-        {},
-        options
-      )
+      .post(`${BASE_URL}/payables/${payableId}/upload/cancel`, {}, options)
       .then((res) => {
         return { data: res.data };
       });
@@ -443,11 +363,7 @@ export const dataProvider = {
     formData.append("file", file);
 
     return axios
-      .post(
-        `${BASE_URL}/backoffice/api/v1/payables/${payableId}/upload`,
-        formData,
-        options
-      )
+      .post(`${BASE_URL}/payables/${payableId}/upload`, formData, options)
       .then((res) => Promise.resolve({ data: res.data }));
   },
 
@@ -463,7 +379,7 @@ export const dataProvider = {
 
     return axios
       .get(
-        `${BASE_URL}/backoffice/api/v1/advancements/export?ids=${advancementIds.join()}`,
+        `${BASE_URL}/advancements/export?ids=${advancementIds.join()}`,
         options
       )
       .then((res) => {
@@ -479,3 +395,5 @@ export const dataProvider = {
       });
   },
 };
+
+//export default dataProvider;

@@ -1,17 +1,27 @@
 "use client";
 import Image from "next/image";
-import TextField from "./components/TextField";
-import Button from "./components/Button";
+import TextField from "../components/TextField";
+import Button from "../components/Button";
 import { Person, Lock } from "@mui/icons-material/";
 import { SetStateAction, useState } from "react";
-import CondominusLogo from "./assets/logo.png";
+import CondominusLogo from "../assets/logo.png";
 import { useRouter } from "next/navigation";
-import authProvider from "./backoffice/authProvider";
+import authProvider from "../authProvider";
 
 export default function Login() {
+  // const router = useRouter();
+
+  // if (localStorage.getItem("accessToken")) {
+  //   router.replace("/backoffice");
+  // }
+
   const [activeContent, setActiveContent] = useState<"login" | "resetPassword">(
     "login"
   );
+
+  function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
   let content: React.ReactNode = null;
   if (activeContent === "login") {
@@ -29,11 +39,11 @@ export default function Login() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-main">
+    <main className="flex min-h-screen flex-col items-center bg-main py-20">
       <Image
         src={CondominusLogo}
         alt="Condominus Logo"
-        className="mt-20 mb-14 w-80 brightness-0 opacity-90"
+        className="mt-20 mb-14 w-80"
       />
       {content}
     </main>
@@ -50,6 +60,10 @@ function LoginContent({
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    function delay(ms: number) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
     event.preventDefault();
     setLoading(true);
     setErrorMessages([]);
@@ -67,7 +81,7 @@ function LoginContent({
       console.log(error);
       console.log(cause);
 
-      if (cause && typeof cause === 'object' && 'messages' in cause) {
+      if (cause && typeof cause === "object" && "messages" in cause) {
         setErrorMessages(cause.messages as SetStateAction<string[]>);
       }
 
@@ -119,12 +133,12 @@ function LoginContent({
         type="submit"
         className="mt-7 w-full"
       />
-      <Button
+      {/* <Button
         variant="simple"
         label="Esqueci minha senha"
         className="mt-4"
         onClick={onResetPasswordClick}
-      />
+      /> */}
     </form>
   );
 }

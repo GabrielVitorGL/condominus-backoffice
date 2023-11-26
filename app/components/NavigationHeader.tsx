@@ -36,7 +36,8 @@ const NavigationHeader = ({ routePath }: NavigationHeaderProps) => {
 const HeaderContainer = styled("div")(({ theme }) => ({
   position: "sticky",
   top: "0",
-  height: "48px",
+  height: "54px",
+  paddingTop: "2px",
   backgroundColor: theme.palette.grey[100],
   display: "flex",
   flexDirection: "row",

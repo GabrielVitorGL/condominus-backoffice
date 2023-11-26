@@ -1,15 +1,16 @@
+import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useAuthState, useRedirect } from "react-admin";
 
 const PrivatePage = ({ children }: { children: React.ReactNode }) => {
-  const redirect = useRedirect();
+  const router = useRouter();
   const { isLoading: authLoading, authenticated } = useAuthState();
 
   useEffect(() => {
     if (!authLoading && !authenticated) {
-      //redirect("/login");
+      router.replace("/login");
     }
-  }, [authLoading, authenticated, redirect]);
+  }, [authLoading, authenticated, router]);
 
   if (authLoading) {
     return <p>Loading</p>;
