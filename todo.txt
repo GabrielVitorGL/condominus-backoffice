@@ -1,3 +1,4 @@
+Alterar cor do botão de cadastrar morador para a mais escura
 Exibir erro no login
 Outras páginas
 Layout de cadastro
