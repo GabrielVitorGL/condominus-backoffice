@@ -5,11 +5,7 @@ import { BASE_URL } from "./utils/constants";
 export const dataProvider = {
   getList: (resource, params) => {
     console.log(resource, params);
-    console.log(params.sort);
-    console.log(params.filter);
-    //const { ...paramFilters } = params.filter;
-    //const { q } = paramFilters;
-
+    
     let url = `${BASE_URL}/${resource}?`;
 
     const options = {
@@ -42,9 +38,7 @@ export const dataProvider = {
             const filterField = Object.keys(params.filter)[
               Object.keys(params.filter).length - 1
             ];
-            console.log(filterField);
             const filterValue = params.filter[filterField];
-            console.log(filterValue);
 
             const filteredData = finalData.filter((item) => {
               return item[filterField]
