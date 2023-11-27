@@ -36,7 +36,7 @@ import CustomExporter from "../utils/exporter";
 const postFilters = [
   <SearchInput
     key="search"
-    source="remetente"
+    source="destinatario"
     placeholder="Buscar por destinatário"
     alwaysOn
   />,
@@ -73,6 +73,7 @@ const DeliveryList = () => {
           perPage={999}
           pagination={false}
           filters={postFilters}
+          empty={false}
         >
           <Datagrid
             bulkActionButtons={
@@ -84,7 +85,7 @@ const DeliveryList = () => {
           >
             <TextField source="id" label="Id" sortable={true} />
             <TextField
-              source="remetente"
+              source="destinatario"
               label="Destinatário"
               sortable={true}
             />
@@ -122,8 +123,8 @@ const EditButton = () => {
     );
 
     if (entrega !== undefined) {
-      setDestinatario(entrega.remetente);
-      setIdApartamento(entrega.idPessoa);
+      setDestinatario(entrega.destinatario);
+      setIdApartamento(entrega.idApartamento);
     }
   }, [listContext.data, listContext.selectedIds, open]);
 

@@ -248,7 +248,36 @@ export const dataProvider = {
   delete: (resource, params) => Promise.resolve({ data }),
 
   // Not implemented
-  deleteMany: (resource, params) => Promise.resolve({ resource }),
+  deleteMany: (resource, params) => { 
+    console.log(params);
+    console.log(params.ids);
+    console.log(resource);
+
+    let url = `${BASE_URL}/${resource}`;
+
+    if (resource == "morador") {
+      url = `${BASE_URL}/${resource}`;
+    }
+
+    if (resource == "usuário") {
+      url = `${BASE_URL}/Usuarios/DeletarMuitos`;
+    }
+
+    const bodyParams = params.ids;
+    
+    return new Promise((resolve, reject) => {
+      axios
+        .delete(url, {bodyParams}, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        })
+        .then((res) => {
+          resolve({ data: res.data });
+        })
+        .catch((e) => reject(e));
+    });
+   },
 
   advancementsAction: (type, advancementsIds) => {
     const options = {

@@ -43,7 +43,7 @@ export default function Login() {
       <Image
         src={CondominusLogo}
         alt="Condominus Logo"
-        className="mt-20 mb-14 w-80"
+        className="mt-14 mb-14 w-80"
       />
       {content}
     </main>

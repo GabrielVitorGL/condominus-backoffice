@@ -63,6 +63,7 @@ const AccountList = () => {
           perPage={999}
           pagination={false}
           filters={postFilters}
+          empty={false}
         >
           <Datagrid
             bulkActionButtons={
@@ -108,7 +109,7 @@ const EditButton = () => {
       setNome(morador.nome);
       setCpf(morador.cpf);
       setTelefone(morador.telefone);
-      setApartamento(morador.apartamento);
+      setApartamento(morador.idApartamento);
     }
   }, [listContext.data, listContext.selectedIds, open]);
 

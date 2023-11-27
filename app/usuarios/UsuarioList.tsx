@@ -64,6 +64,7 @@ const UserList = () => {
           perPage={999}
           pagination={false}
           filters={postFilters}
+          empty={false}
         >
           <Datagrid
             bulkActionButtons={

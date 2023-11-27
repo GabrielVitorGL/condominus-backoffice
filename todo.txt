@@ -16,11 +16,11 @@ Nova entrega/Editar entrega/checar campos da lista
 
 DOING:
 
-Página de entregas
+dataProvider Delete method
 
 OK:
 
-
+Página de entregas
 Página de usuários
 Estilizar botões do modal de remoção
 Layout de cadastro
