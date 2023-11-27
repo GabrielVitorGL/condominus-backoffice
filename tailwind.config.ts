@@ -21,6 +21,8 @@ const config: Config = {
       },
       fontFamily: {
         roboto: "Roboto, sans-serif",
+        logo: "Hammersmith One, sans-serif, Roboto",
+        lato: "Lato, sans-serif",
         serif:
           "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
       },

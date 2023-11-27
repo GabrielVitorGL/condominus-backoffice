@@ -1,7 +1,6 @@
 "use client";
 import React, { Fragment, useEffect } from "react";
 import {
-  FunctionField,
   TextField,
   Datagrid,
   List,
@@ -21,7 +20,7 @@ import {
   DialogContent,
   TextField as MUITextField,
 } from "@mui/material";
-import { Person, EditRounded } from "@mui/icons-material";
+import { AccountBoxOutlined, EditRounded } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../utils/exporter";
@@ -35,10 +34,12 @@ const postFilters = [
   />,
 ];
 
-const AccountList = () => {
+const UserList = () => {
   return (
     <PrivatePage>
-      <NavigationHeader routePath={[{ icon: Person, title: "Moradores" }]} />
+      <NavigationHeader
+        routePath={[{ icon: AccountBoxOutlined, title: "Usuários" }]}
+      />
       <div
         style={{
           display: "flex",
@@ -47,7 +48,7 @@ const AccountList = () => {
           padding: "20px 32px",
         }}
       >
-        <span style={{ fontWeight: 700, fontSize: "26px" }}>Moradores</span>
+        <span style={{ fontWeight: 700, fontSize: "26px" }}>Usuários</span>
         <div className="bg-main mt-1" style={{ height: "3px" }} />
 
         <StyledList
@@ -59,7 +60,7 @@ const AccountList = () => {
             </>
           }
           component="div"
-          resource={`Pessoas/GetMoradores`}
+          resource={`Usuarios/GetAll`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -74,15 +75,9 @@ const AccountList = () => {
           >
             <TextField source="id" label="Id" sortable={true} />
             <TextField source="nome" label="Nome" sortable={true} />
+            <TextField source="email" label="Email" sortable={false} />
             <TextField source="telefone" label="Telefone" sortable={false} />
             <TextField source="cpf" label="CPF" sortable={false} />
-            <FunctionField
-              label="Dependentes"
-              render={(record: any) => {
-                if (record.dependentes == null) return 0;
-                return record.dependentes.length();
-              }}
-            />
           </Datagrid>
         </StyledList>
       </div>
@@ -96,19 +91,21 @@ const EditButton = () => {
 
   const [nome, setNome] = React.useState("");
   const [cpf, setCpf] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [telefone, setTelefone] = React.useState("");
   const [apartamento, setApartamento] = React.useState("");
 
   useEffect(() => {
-    const morador = listContext.data.find(
+    const usuario = listContext.data.find(
       (x) => x.id === listContext.selectedIds[0]
     );
 
-    if (morador !== undefined) {
-      setNome(morador.nome);
-      setCpf(morador.cpf);
-      setTelefone(morador.telefone);
-      setApartamento(morador.apartamento);
+    if (usuario !== undefined) {
+      setNome(usuario.nome);
+      setEmail(usuario.email);
+      setCpf(usuario.cpf);
+      setTelefone(usuario.telefone);
+      setApartamento(usuario.apartamento);
     }
   }, [listContext.data, listContext.selectedIds, open]);
 
@@ -129,7 +126,7 @@ const EditButton = () => {
       >
         <>
           <EditRounded fontSize="small" className="mr-2" />
-          Editar morador
+          Editar usuário
         </>
       </ReactAdminButton>
       <Dialog
@@ -142,7 +139,7 @@ const EditButton = () => {
           id="alert-dialog-title"
           className="flex justify-center !text-2xl !mt-3"
         >
-          {"EDITAR MORADOR"}
+          {"EDITAR USUÁRIO"}
         </DialogTitle>
         <DialogContent className="!py-4 !mb-2 !w-[500px]">
           <MUITextField
@@ -151,6 +148,15 @@ const EditButton = () => {
             value={nome}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setNome(event.target.value);
+            }}
+            className="w-full !mb-7"
+          />
+          <MUITextField
+            variant="outlined"
+            label="Email"
+            value={email}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setEmail(event.target.value);
             }}
             className="w-full !mb-7"
           />
@@ -207,14 +213,14 @@ const EditButton = () => {
 const RemoveButton = () => {
   const listContext = useListContext();
 
-  const morador = listContext.data.find(
+  const usuario = listContext.data.find(
     (x) => x.id == listContext.selectedIds[0]
   );
 
-  let nomeMorador = "";
+  let nomeUsuario = "";
 
-  if (typeof morador !== "undefined") {
-    nomeMorador = morador.nome;
+  if (typeof usuario !== "undefined") {
+    nomeUsuario = usuario.nome;
   }
 
   return (
@@ -222,20 +228,20 @@ const RemoveButton = () => {
       mutationMode="undoable"
       confirmContent={
         listContext.selectedIds.length > 1
-          ? "Tem certeza que deseja excluir os moradores selecionados?"
-          : `Tem certeza que deseja excluir o morador ${
-              nomeMorador !== "" ? `"` + nomeMorador + `"` : "selecionado"
+          ? "Tem certeza que deseja excluir os usuários selecionados?"
+          : `Tem certeza que deseja excluir o usuário ${
+              nomeUsuario !== "" ? `"` + nomeUsuario + `"` : "selecionado"
             }?`
       }
-      resource={listContext.selectedIds.length > 1 ? "moradores" : "morador"}
+      resource={"usuário"}
     />
   );
 };
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "Pessoas/GetMoradores";
-    const sheetName = "Moradores";
+    const resource = "Usuarios/GetAll";
+    const sheetName = "Usuarios";
 
     CustomExporter(resource, sheetName);
   };
@@ -287,4 +293,4 @@ const StyledList = styled(List)({
   },
 });
 
-export default AccountList;
+export default UserList;

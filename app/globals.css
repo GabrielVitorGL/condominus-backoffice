@@ -3,8 +3,50 @@
 @tailwind utilities;
 
 html {
-    margin: 0;
-    overflow: hidden;
+  margin: 0;
+  overflow: hidden;
 
-    font-family: "Roboto", system-ui, sans-serif;
-  }
+  font-family: "Roboto", system-ui, sans-serif;
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root.ra-confirm {
+  background-color: #d23434;
+  color: #fff;
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root > .MuiButton-startIcon {
+  display: none;
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root.ra-confirm > span {
+  font-size: 12px;
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root.ra-confirm {
+  font-size: 0;
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root.ra-confirm:after {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.75;
+  letter-spacing: 0.02857em;
+  content: "Excluir";
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root:not(.button) {
+  padding: 6px 16px !important;
+  margin-right: 12px !important;
+  margin-bottom: 4px !important;
+  border-radius: 6px !important;
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root:not(.button) {
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root:not(.ra-confirm):not(.button) {
+  margin-right: 0px !important;
+  box-shadow: none;
+}

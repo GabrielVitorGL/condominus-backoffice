@@ -5,26 +5,12 @@ import { BASE_URL } from "./utils/constants";
 export const dataProvider = {
   getList: (resource, params) => {
     console.log(resource, params);
-    const { ...paramFilters } = params.filter;
-    const { q } = paramFilters;
+    console.log(params.sort);
+    console.log(params.filter);
+    //const { ...paramFilters } = params.filter;
+    //const { q } = paramFilters;
 
     let url = `${BASE_URL}/${resource}?`;
-
-    if (q) url += `&name=${q}`;
-    Object.keys(paramFilters).forEach((key) => {
-      if (key !== "q" && paramFilters[key]) {
-        url += `&${key}=${paramFilters[key]}`;
-      }
-    });
-
-    Object.keys(params.sort).forEach((key) => {
-      const keyNameMap = {
-        field: "order_field",
-        order: "sort",
-      };
-
-      url += `&${keyNameMap[key]}=${params.sort[key]}`;
-    });
 
     const options = {
       headers: {
@@ -35,12 +21,43 @@ export const dataProvider = {
       axios
         .get(url, options)
         .then((res) => {
-          console.log(res.total);
+          let finalData = res.data;
+          if (params.sort && params.sort.field && params.sort.order) {
+            const sortedData = finalData.sort(function (a, b) {
+              const keyA = a[params.sort.field];
+              const keyB = b[params.sort.field];
+
+              if (params.sort.order == "ASC") {
+                if (keyA < keyB) return -1;
+                if (keyA > keyB) return 1;
+              } else if (params.sort.order == "DESC") {
+                if (keyA < keyB) return 1;
+                if (keyA > keyB) return -1;
+              }
+            });
+            finalData = sortedData;
+          }
+
+          if (params.filter && Object.keys(params.filter).length > 0) {
+            const filterField = Object.keys(params.filter)[
+              Object.keys(params.filter).length - 1
+            ];
+            console.log(filterField);
+            const filterValue = params.filter[filterField];
+            console.log(filterValue);
+
+            const filteredData = finalData.filter((item) => {
+              return item[filterField]
+                .toString()
+                .toLowerCase()
+                .includes(filterValue.toString().toLowerCase());
+            });
+
+            finalData = filteredData;
+          }
           resolve({
-            data: res.data,
+            data: finalData,
             total: 1,
-            //pagination: res.data.pagination,
-            //total: res.data.pagination.total_entries_size,
           });
         })
         .catch((e) => reject(e));
@@ -237,7 +254,7 @@ export const dataProvider = {
   delete: (resource, params) => Promise.resolve({ data }),
 
   // Not implemented
-  deleteMany: (resource, params) => Promise.resolve({ data }),
+  deleteMany: (resource, params) => Promise.resolve({ resource }),
 
   advancementsAction: (type, advancementsIds) => {
     const options = {

@@ -1,0 +1,30 @@
+.MuiDialogActions-root > .MuiButtonBase-root.ra-confirm {
+  color: #cf3e3e;
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root.ra-confirm > span {
+  font-size: 12px;
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root.ra-confirm {
+  font-size: 0;
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root.ra-confirm:after {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.75;
+  letter-spacing: 0.02857em;
+  content: "Excluir";
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root > .MuiButton-startIcon {
+  margin-top: -3px;
+  margin-right: 6px;
+}
+
+.MuiDialogActions-root > .MuiButtonBase-root:not(.button) {
+  padding: 8px 18px 8px 18px !important;
+  margin-bottom: 4px !important;
+  border-radius: 6px !important;
+}

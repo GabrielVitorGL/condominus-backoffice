@@ -1,8 +1,55 @@
-Alterar cor do botão de cadastrar morador para a mais escura
-Exibir erro no login
-Outras páginas
-Layout de cadastro
-Layout de edição
+Usar API do sommee
+Mudar Remetente para Destinatário e idPessoa para idApartamento
 Conectar cadastro
 Conectar edição
 Conectar remoção
+Tela de Avisos com Expand
+Verificar expiração do token
+Remover botão de cadastrar novo morador
+Página de Reservas
+Página de Áreas Comuns
+Página de Avisos
+Textfield com listagem de recurso, que armazena o id do recurso selecionado
+
+Nova entrega/Editar entrega/checar campos da lista
+
+
+DOING:
+
+Página de entregas
+
+OK:
+
+
+Página de usuários
+Estilizar botões do modal de remoção
+Layout de cadastro
+Layout de edição
+Filtro por campo
+Ordenação de colunas
+Ajustar mensagem de exclusão de 1 item
+Desabilitar botão de edição ao selecionar mais de 1 item
+Exportar em Excel ao invés de CSV
+Mudar nome da planilha ao exportar
+Alterar cor do botão de cadastrar morador para a mais escura
+Exibir erro no login
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

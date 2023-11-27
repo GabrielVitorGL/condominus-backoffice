@@ -80,16 +80,19 @@ function LoginContent({
       const cause = (error as Error).cause;
       console.log(error);
       console.log(cause);
+      console.log((error as any).response?.status);
 
-      if (cause && typeof cause === "object" && "messages" in cause) {
-        setErrorMessages(cause.messages as SetStateAction<string[]>);
+      if ((error as any).response?.status == 400) {
+        setErrorMessages(["Usuário ou senha inválidos."]);
+      } else {
+        setErrorMessages(["Ocorreu um erro inesperado. Tente novamente"]);
       }
 
       setLoading(false);
       return;
     }
 
-    router.push("/backoffice");
+    router.push("/moradores");
   };
 
   return (
@@ -111,7 +114,7 @@ function LoginContent({
         label="Senha"
         icon={<Lock />}
         type="password"
-        className="mb-7 text-white"
+        className="mb-4 text-white"
         error={!!errorMessages}
         required
       />
@@ -120,7 +123,7 @@ function LoginContent({
           {errorMessages.map((message, index) => (
             <span
               key={index}
-              className="text-xs font-bold tracking-wide text-error"
+              className="text-sm font-medium text-black tracking-wide text-error"
             >
               {message}
             </span>

@@ -4,7 +4,6 @@ import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import { useTranslate } from "ra-core";
 import { Tooltip, IconButton, Menu, PopoverOrigin } from "@mui/material";
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import { Logout } from "react-admin";
 import { useRouter } from "next/navigation";
 
@@ -49,7 +48,7 @@ export const UserMenu = (props: UserMenuProps) => {
           </span>
         </IconButton>
       </Tooltip>
-      <Menu
+      <StyledMenu
         id="menu-appbar"
         disableScrollLock
         anchorEl={anchorEl}
@@ -59,7 +58,7 @@ export const UserMenu = (props: UserMenuProps) => {
         onClose={handleClose}
       >
         {children}
-      </Menu>
+      </StyledMenu>
     </Root>
   );
 };
@@ -112,6 +111,18 @@ const defaultIcon = (
     </span>
   </div>
 );
+
+const StyledMenu = styled(Menu)({
+  "& .MuiPaper-root": {
+    marginRight: "10px",
+  },
+  "& .MuiList-root": {
+    padding: "0px",
+  },
+  "& .MuiButtonBase-root": {
+    padding: "13px 20px 13px 19px",
+  },
+});
 
 const AnchorOrigin: PopoverOrigin = {
   vertical: "bottom",

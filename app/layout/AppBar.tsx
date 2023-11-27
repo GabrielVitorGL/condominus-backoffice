@@ -21,7 +21,9 @@ const CustomAppBar: FC<AppBarProps> = memo((props: AppBarProps) => {
             CONDOMINUS - ADMINISTRAÇÃO
           </span>
         </div>
-        <UserMenu />
+        <div className="mr-2">
+          <UserMenu />
+        </div>
       </Toolbar>
     </StyledAppBar>
   );

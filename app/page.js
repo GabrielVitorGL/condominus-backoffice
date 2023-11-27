@@ -3,10 +3,12 @@
 import { Admin, Resource, ListGuesser, ShowGuesser } from "react-admin";
 import { Routes, Route } from "react-router-dom";
 import AccountList from "./moradores/MoradorList";
+import UserList from "./usuarios/UsuarioList";
+import DeliveryList from "./entregas/EntregaList";
 import authProvider from "./authProvider";
 import { dataProvider } from "./dataProvider";
 import polyglotI18nProvider from "ra-i18n-polyglot";
-import portugueseMessages from "ra-language-pt-br";
+import ptBr from "ra-language-pt-br";
 import MainLayout from "./layout/Layout";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -30,13 +32,9 @@ function AdminApp() {
       theme={theme}
       loginPage={Login}
     >
-      <Resource
-        name="/moradores"
-        list={AccountList}
-        show={ShowGuesser}
-      />
-      <Resource name="/usuarios" />
-      <Resource name="/entregas"  />
+      <Resource name="/moradores" list={AccountList} show={ShowGuesser} />
+      <Resource name="/usuarios" list={UserList} show={ShowGuesser} />
+      <Resource name="/entregas" list={DeliveryList} show={ShowGuesser} />
       <Resource name="/reservas" />
       <Resource name="/areas" />
       <Resource name="/avisos" />
@@ -60,7 +58,7 @@ const theme = {
     primary: {
       main: "#16818E",
       light: "#0FA891",
-      dark: "#0A6E5F",
+      dark: "#3594a1",
     },
     secondary: {
       main: "rgba(0, 79, 89, 0.31)",
@@ -115,52 +113,11 @@ const theme = {
   },
 };
 
-const i18nProvider = polyglotI18nProvider(() => {
-  return {
-    ...portugueseMessages,
-    notifications: {
-      advancements: {
-        approved: "Antecipação aprovada com sucesso!",
-        rejected: "Antecipação reprovada com sucesso!",
-        approved_many: "Antecipações aprovadas com sucesso!",
-        rejected_many: "Antecipações reprovadas com sucesso!",
-      },
-      sold_payables: {
-        liquidated: "Título liquidado com sucesso!",
-      },
-      config: {
-        success: "Configurações salvas com sucesso!",
-      },
-      error: {
-        form: "Não foi possível realizar a operação. Por favor verifique os avisos no formulário.",
-        default: "Algo deu errado, tente novamente mais tarde.",
-      },
-    },
-    payment_methods: {
-      ted: "TED",
-      boleto: "Boleto",
-    },
-    document_types: {
-      cpf: "CPF",
-      cnpj: "CNPJ",
-      both: "CPF e CNPJ",
-    },
-    type: "Tipo",
-    status: "Status",
-    resources: {
-      advancements: { name: "Antecipação |||| Antecipações" },
-      accounts: { name: "Conta |||| Contas" },
-      advancement_integrations: { name: "Integração |||| Integrações" },
-      lenders: { name: "Fundo |||| Fundos" },
-      payables: { name: "Título |||| Títulos" },
-      simulations: { name: "Simulação |||| Simulações" },
-      lender_webhooks: { name: "Webhook |||| Webhooks" },
-      partners: { name: "Parceiro |||| Parceiros" },
-      sold_payables: { name: "Títulos Negociado |||| Títulos Negociados" },
-      sold_payable_liquidations: { name: "Liquidação |||| Liquidações" },
-      moradores: { name: "Moradores |||| Moradores" },
-    },
-  };
-}, "pt-BR");
+const translations = { "pt-br": ptBr };
+
+const i18nProvider = polyglotI18nProvider(
+  (locale) => translations[locale],
+  "pt-br"
+);
 
 export default App;
