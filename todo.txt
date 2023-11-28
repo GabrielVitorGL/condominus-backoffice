@@ -1,25 +1,44 @@
 Usar API do sommee
-Mudar Remetente para Destinatário e idPessoa para idApartamento
-Conectar cadastro
-Conectar edição
-Conectar remoção
+Cadastrar entrega receber transportadora
+Remoção - moradores
+Remoção - entregas
+Remoção - reservas
+Remoção - avisos
+Remoção - áreas comuns
+Cadastro - reservas
+Cadastro - avisos
+Cadastro - áreas comuns
+Edição - moradores
+Edição - usuários
+Edição - entregas
+Edição - reservas
+Edição - avisos
+Edição - áreas comuns
 Tela de Avisos com Expand
-Verificar expiração do token
-Remover botão de cadastrar novo morador
+Adicionar botão de cadastrar morador
 Página de Reservas
 Página de Áreas Comuns
 Página de Avisos
 Textfield com listagem de recurso, que armazena o id do recurso selecionado
 
-Nova entrega/Editar entrega/checar campos da lista
+Conectar edição
 
 
 DOING:
 
-dataProvider Delete method
 
 OK:
 
+
+Verificar expiração do token
+Remover botão de cadastrar novo morador
+Nova entrega/Editar entrega/checar campos da lista
+Conectar cadastro
+Controlar mensagem de carregamento por uma variável de ambiente
+Exibir mensagem de carregamento enquanto os dados não foram carregados
+Mudar Remetente para Destinatário e idPessoa para idApartamento
+Conectar remoção
+dataProvider Delete method
 Página de entregas
 Página de usuários
 Estilizar botões do modal de remoção

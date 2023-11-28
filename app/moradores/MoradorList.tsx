@@ -25,6 +25,7 @@ import { Person, EditRounded } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../utils/exporter";
+import { SHOW_LOADING } from "../utils/constants";
 
 const postFilters = [
   <SearchInput
@@ -53,7 +54,7 @@ const AccountList = () => {
         <StyledList
           actions={
             <>
-              <div className="flex flex-row items-center align-middle pt-5 pb-3">
+              <div className="flex flex-row items-center align-middle pt-6 pb-3">
                 <CustomExportButton />
               </div>
             </>
@@ -65,29 +66,48 @@ const AccountList = () => {
           filters={postFilters}
           empty={false}
         >
-          <Datagrid
-            bulkActionButtons={
-              <Fragment>
-                <EditButton />
-                <RemoveButton />
-              </Fragment>
-            }
-          >
-            <TextField source="id" label="Id" sortable={true} />
-            <TextField source="nome" label="Nome" sortable={true} />
-            <TextField source="telefone" label="Telefone" sortable={false} />
-            <TextField source="cpf" label="CPF" sortable={false} />
-            <FunctionField
-              label="Dependentes"
-              render={(record: any) => {
-                if (record.dependentes == null) return 0;
-                return record.dependentes.length();
-              }}
-            />
-          </Datagrid>
+          <CustomDatagrid />
         </StyledList>
       </div>
     </PrivatePage>
+  );
+};
+
+const CustomDatagrid = () => {
+  const { isLoading, isFetching } = useListContext();
+
+  if ((isLoading || isFetching) && SHOW_LOADING) {
+    return (
+      <div className="flex flex-col items-center justify-center my-5">
+        <div className="flex flex-row items-center justify-center">
+          <div className="animate-spin rounded-full h-6 w-6 border border-b-transparent border-black/90"></div>
+        </div>
+        <span className="text-neutral-800 mt-4">Carregando...</span>
+      </div>
+    );
+  }
+
+  return (
+    <Datagrid
+      bulkActionButtons={
+        <Fragment>
+          <EditButton />
+          <RemoveButton />
+        </Fragment>
+      }
+    >
+      <TextField source="id" label="Id" sortable={true} />
+      <TextField source="nome" label="Nome" sortable={true} />
+      <TextField source="telefone" label="Telefone" sortable={false} />
+      <TextField source="cpf" label="CPF" sortable={false} />
+      <FunctionField
+        label="Dependentes"
+        render={(record: any) => {
+          if (record.dependentes == null) return 0;
+          return record.dependentes.length();
+        }}
+      />
+    </Datagrid>
   );
 };
 

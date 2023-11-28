@@ -10,6 +10,7 @@ import {
   useListContext,
   SearchInput,
   DateField,
+  useRefresh,
 } from "react-admin";
 
 import { styled } from "@mui/material/styles";
@@ -32,12 +33,21 @@ import {
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../utils/exporter";
+import { SHOW_LOADING } from "../utils/constants";
+import { dataProvider } from "../dataProvider";
+import Alert from "../components/Alert";
 
 const postFilters = [
   <SearchInput
     key="search"
     source="destinatario"
     placeholder="Buscar por destinatário"
+    alwaysOn
+  />,
+  <SearchInput
+    key="searchByApto"
+    source="numeroApartamento"
+    placeholder="Buscar por apartamento"
     alwaysOn
   />,
 ];
@@ -62,7 +72,7 @@ const DeliveryList = () => {
         <StyledList
           actions={
             <>
-              <div className="flex flex-row items-center align-middle pt-5 pb-3">
+              <div className="flex flex-row items-center align-middle pt-3 pb-3">
                 <CreateDeliveryButton />
                 <CustomDropdownMenu />
               </div>
@@ -75,38 +85,58 @@ const DeliveryList = () => {
           filters={postFilters}
           empty={false}
         >
-          <Datagrid
-            bulkActionButtons={
-              <Fragment>
-                <EditButton />
-                <RemoveButton />
-              </Fragment>
-            }
-          >
-            <TextField source="id" label="Id" sortable={true} />
-            <TextField
-              source="destinatario"
-              label="Destinatário"
-              sortable={true}
-            />
-            <DateField
-              source="dataEntrega"
-              label="Data de Entrega"
-              sortable={true}
-              showTime
-              locales="pt-BR"
-            />
-            <DateField
-              source="dataRetirada"
-              label="Data de Retirada"
-              sortable={true}
-              showTime
-              locales="pt-BR"
-            />
-          </Datagrid>
+          <CustomDatagrid />
         </StyledList>
       </div>
     </PrivatePage>
+  );
+};
+
+const CustomDatagrid = () => {
+  const { isLoading, isFetching } = useListContext();
+
+  if ((isLoading || isFetching) && SHOW_LOADING) {
+    return (
+      <div className="flex flex-col items-center justify-center my-5">
+        <div className="flex flex-row items-center justify-center">
+          <div className="animate-spin rounded-full h-6 w-6 border border-b-transparent border-black/90"></div>
+        </div>
+        <span className="text-neutral-800 mt-4">Carregando...</span>
+      </div>
+    );
+  }
+
+  return (
+    <Datagrid
+      bulkActionButtons={
+        <Fragment>
+          <EditButton />
+          <RemoveButton />
+        </Fragment>
+      }
+    >
+      <TextField source="id" label="Id" sortable={true} />
+      <TextField source="destinatario" label="Destinatário" sortable={true} />
+      <TextField
+        source="numeroApartamento"
+        label="Nº do Apartamento"
+        sortable={false}
+      />
+      <DateField
+        source="dataEntrega"
+        label="Data de Entrega"
+        sortable={true}
+        showTime
+        locales="pt-BR"
+      />
+      <DateField
+        source="dataRetirada"
+        label="Data de Retirada"
+        sortable={true}
+        showTime
+        locales="pt-BR"
+      />
+    </Datagrid>
   );
 };
 
@@ -219,9 +249,18 @@ const RemoveButton = () => {
 };
 
 const CreateDeliveryButton = () => {
+  const refresh = useRefresh();
   const [open, setOpen] = React.useState(false);
   const [destinatario, setDestinatario] = React.useState("");
   const [idApartamento, setIdApartamento] = React.useState("");
+
+  const [requiredError, setRequiredError] = React.useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = React.useState<
+    Partial<Record<string, string>>
+  >({});
+  const getErrorMessage = (value: string | undefined, error?: string) =>
+    (!value && requiredError) || error;
+  const [showAlert, setShowAlert] = React.useState<boolean>(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -231,9 +270,51 @@ const CreateDeliveryButton = () => {
     setOpen(false);
   };
 
+  const validateCreate = () => {
+    setValidationErrors({});
+    setRequiredError(null);
+    const errors: Partial<Record<string, string>> = {};
+
+    if (!destinatario || !idApartamento) {
+      setRequiredError("Este campo é obrigatório");
+      return;
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    return true;
+  };
+
+  const handleCreateEntrega = async () => {
+    const isValid = validateCreate();
+
+    if (!isValid) {
+      return;
+    }
+
+    try {
+      await dataProvider.create("Entregas", {
+        data: {
+          destinatario: destinatario,
+          idApartamento: idApartamento,
+        },
+      });
+      handleClose();
+      refresh();
+    } catch (error) {
+      console.log(error);
+      setShowAlert(true);
+    }
+  };
+
   useEffect(() => {
     setDestinatario("");
     setIdApartamento("");
+    setValidationErrors({});
+    setRequiredError(null);
   }, [open]);
 
   return (
@@ -262,6 +343,9 @@ const CreateDeliveryButton = () => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setDestinatario(event.target.value);
             }}
+            error={!destinatario && !!requiredError}
+            helperText={getErrorMessage(destinatario)}
+            required
             className="w-full !mb-7"
           />
           <MUITextField
@@ -271,6 +355,9 @@ const CreateDeliveryButton = () => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setIdApartamento(event.target.value);
             }}
+            error={!idApartamento && !!requiredError}
+            helperText={getErrorMessage(idApartamento)}
+            required
             className="w-full"
           />
         </DialogContent>
@@ -285,12 +372,13 @@ const CreateDeliveryButton = () => {
           <Button
             className="button"
             variant="contained"
-            onClick={handleClose}
+            onClick={handleCreateEntrega}
             autoFocus
           >
             Criar
           </Button>
         </DialogActions>
+        {showAlert && <BottomAlert setShowAlert={setShowAlert} />}
       </Dialog>
     </>
   );
@@ -387,5 +475,28 @@ const StyledList = styled(List)({
     fontSize: "17px",
   },
 });
+
+const BottomAlert = ({
+  setShowAlert,
+}: {
+  setShowAlert: (value: boolean) => void;
+}) => (
+  <div
+    style={{
+      position: "fixed",
+      bottom: "0px",
+      left: "0px",
+      paddingLeft: "20px",
+      paddingBottom: "20px",
+      zIndex: 1000,
+    }}
+  >
+    <Alert
+      type="error"
+      text="Ocorreu um erro ao criar a entrega. Por favor, tente novamente."
+      onClose={() => setShowAlert(false)}
+    />
+  </div>
+);
 
 export default DeliveryList;

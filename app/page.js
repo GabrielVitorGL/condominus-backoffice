@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
+import React from "react";
 import { Admin, Resource, ListGuesser, ShowGuesser } from "react-admin";
 import { Routes, Route } from "react-router-dom";
 import AccountList from "./moradores/MoradorList";
@@ -10,19 +10,9 @@ import { dataProvider } from "./dataProvider";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import ptBr from "ra-language-pt-br";
 import MainLayout from "./layout/Layout";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import Login from "./login/page";
 
 function AdminApp() {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!localStorage.getItem("accessToken")) {
-      router.replace("/login");
-    }
-  }, []);
-
   return (
     <Admin
       dataProvider={dataProvider}
@@ -97,18 +87,6 @@ const theme = {
     },
     blue: {
       400: "#42A5F5",
-    },
-  },
-  boxShadow: {
-    light:
-      "0px -1px 0px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
-    large:
-      "0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);",
-  },
-  transitions: {
-    duration: {
-      standard: 300,
-      short: 200,
     },
   },
 };

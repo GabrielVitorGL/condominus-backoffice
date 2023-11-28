@@ -5,7 +5,7 @@ import { BASE_URL } from "./utils/constants";
 export const dataProvider = {
   getList: (resource, params) => {
     console.log(resource, params);
-    
+
     let url = `${BASE_URL}/${resource}?`;
 
     const options = {
@@ -96,6 +96,7 @@ export const dataProvider = {
   create: (resource, params) => {
     console.log(resource, params);
     const { data } = params;
+
     let url = `${BASE_URL}/${resource}`;
     const options = {
       headers: {
@@ -247,37 +248,38 @@ export const dataProvider = {
   // Not implemented
   delete: (resource, params) => Promise.resolve({ data }),
 
-  // Not implemented
-  deleteMany: (resource, params) => { 
-    console.log(params);
-    console.log(params.ids);
-    console.log(resource);
+  deleteMany: (resource, params) => {
+    console.log(resource, params);
 
-    let url = `${BASE_URL}/${resource}`;
-
-    if (resource == "morador") {
-      url = `${BASE_URL}/${resource}`;
+    let formattedResource = resource;
+    if (resource == "morador" || resource == "moradores") {
+      formattedResource = "Pessoas";
+    } else if (resource == "usuário" || resource == "usuários") {
+      formattedResource = "Usuarios";
+    } else if (resource == "entrega" || resource == "entregas") {
+      formattedResource = "Entregas";
+    } else if (resource == "reserva" || resource == "reservas") {
+      formattedResource = "Reservas";
+    } else if (resource == "aviso" || resource == "avisos") {
+      formattedResource = "Avisos";
+    } else if (resource == "área comum" || resource == "áreas comuns") {
+      formattedResource = "AreasComuns";
     }
 
-    if (resource == "usuário") {
-      url = `${BASE_URL}/Usuarios/DeletarMuitos`;
-    }
-
-    const bodyParams = params.ids;
-    
     return new Promise((resolve, reject) => {
       axios
-        .delete(url, {bodyParams}, {
+        .delete(`${BASE_URL}/${formattedResource}/DeletarMuitos`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
+          data: params.ids,
         })
         .then((res) => {
           resolve({ data: res.data });
         })
         .catch((e) => reject(e));
     });
-   },
+  },
 
   advancementsAction: (type, advancementsIds) => {
     const options = {

@@ -77,9 +77,7 @@ function LoginContent({
         password: formObject.password as string,
       });
     } catch (error) {
-      const cause = (error as Error).cause;
       console.log(error);
-      console.log(cause);
       console.log((error as any).response?.status);
 
       if ((error as any).response?.status == 400) {
