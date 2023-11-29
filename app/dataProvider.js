@@ -114,8 +114,8 @@ export const dataProvider = {
   },
   update: (resource, params) => {
     console.log(resource, params);
-    const { id, data } = params;
-    let url = `${BASE_URL}/${resource}/${id}`;
+    const { data } = params;
+    let url = `${BASE_URL}/${resource}`;
     const options = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -128,6 +128,42 @@ export const dataProvider = {
           resolve({ data: res.data });
         })
         .catch((e) => reject(e));
+    });
+  },
+  getApartamentoIdByNumero: (numero) => {
+    let url = `${BASE_URL}/Apartamentos/GetAll`;
+    const options = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    };
+    return new Promise((resolve, reject) => {
+      axios.get(url, options).then((res) => {
+        const apartamento = res.data.find(
+          (ap) => ap.numero.toLowerCase() === numero.toLowerCase()
+        );
+        if (!apartamento) {
+          reject("Apartamento não encontrado");
+        }
+        resolve(apartamento.id);
+      });
+    });
+  },
+  getNumeroApartamentoById: (id) => {
+    let url = `${BASE_URL}/Apartamentos/GetAll`;
+    const options = {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    };
+    return new Promise((resolve, reject) => {
+      axios.get(url, options).then((res) => {
+        const apartamento = res.data.find((ap) => ap.id === id);
+        if (!apartamento) {
+          reject("Apartamento não encontrado");
+        }
+        resolve(apartamento.numero);
+      });
     });
   },
   getLenderConfig: (lenderId) => {

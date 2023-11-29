@@ -140,22 +140,79 @@ const CustomDatagrid = () => {
   );
 };
 
+const getApartamento = async (
+  numero: string,
+  setShowAlert: (
+    value: "confirmError" | "findApartamentoError" | undefined
+  ) => void,
+  setLoading: (value: boolean) => void
+) => {
+  let idApartamento = "";
+  try {
+    idApartamento = await dataProvider.getApartamentoIdByNumero(numero);
+  } catch (error) {
+    console.log(error);
+    setShowAlert("findApartamentoError");
+    setLoading(false);
+  }
+
+  if (!idApartamento) {
+    setShowAlert("findApartamentoError");
+    setLoading(false);
+  }
+
+  return idApartamento;
+};
+
 const EditButton = () => {
   const listContext = useListContext();
+  const refresh = useRefresh();
   const [open, setOpen] = React.useState(false);
 
   const [destinatario, setDestinatario] = React.useState("");
-  const [idApartamento, setIdApartamento] = React.useState("");
+  const [nApartamento, setNApartamento] = React.useState("");
+
+  const [isLoading, setLoading] = React.useState(false);
+
+  const [requiredError, setRequiredError] = React.useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = React.useState<
+    Partial<Record<string, string>>
+  >({});
+  const getErrorMessage = (value: string | undefined, error?: string) =>
+    (!value && requiredError) || error;
+  const [showAlert, setShowAlert] = React.useState<
+    "confirmError" | "findApartamentoError" | undefined
+  >(undefined);
 
   useEffect(() => {
-    const entrega = listContext.data.find(
-      (x) => x.id === listContext.selectedIds[0]
-    );
+    async function fetchData() {
+      setLoading(false);
 
-    if (entrega !== undefined) {
-      setDestinatario(entrega.destinatario);
-      setIdApartamento(entrega.idApartamento);
+      const entrega = listContext.data.find(
+        (x) => x.id === listContext.selectedIds[0]
+      );
+
+      if (entrega !== undefined) {
+        setDestinatario(entrega.destinatario);
+
+        let nApartamento = "";
+        try {
+          nApartamento = await dataProvider.getNumeroApartamentoById(
+            entrega.idApartamento
+          );
+        } catch (error) {
+          console.log(error);
+          setShowAlert("findApartamentoError");
+          setLoading(false);
+        }
+        if (!nApartamento) {
+          setShowAlert("findApartamentoError");
+          setLoading(false);
+        }
+        setNApartamento(nApartamento);
+      }
     }
+    fetchData();
   }, [listContext.data, listContext.selectedIds, open]);
 
   const handleClickOpen = () => {
@@ -164,6 +221,56 @@ const EditButton = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const validateEdit = () => {
+    setValidationErrors({});
+    setRequiredError(null);
+
+    const errors: Partial<Record<string, string>> = {};
+
+    if (!destinatario || !nApartamento) {
+      setRequiredError("Este campo é obrigatório");
+      return;
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    return true;
+  };
+
+  const handleEditEntrega = async () => {
+    setLoading(true);
+    const isValid = validateEdit();
+
+    if (!isValid) {
+      return;
+    }
+
+    const idApartamento = await getApartamento(
+      nApartamento,
+      setShowAlert,
+      setLoading
+    );
+
+    try {
+      await dataProvider.update("Entregas", {
+        data: {
+          id: listContext.selectedIds[0],
+          destinatario: destinatario,
+          idApartamento: idApartamento,
+        },
+      });
+      handleClose();
+      refresh();
+    } catch (error) {
+      console.log(error);
+      setShowAlert("confirmError");
+    }
+    setLoading(false);
   };
 
   return (
@@ -198,15 +305,21 @@ const EditButton = () => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setDestinatario(event.target.value);
             }}
+            error={!destinatario && !!requiredError}
+            helperText={getErrorMessage(destinatario)}
+            required
             className="w-full !mb-7"
           />
           <MUITextField
             variant="outlined"
-            label="Apartamento"
-            value={idApartamento}
+            label="Nº do Apartamento"
+            value={nApartamento}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setIdApartamento(event.target.value);
+              setNApartamento(event.target.value);
             }}
+            error={!nApartamento && !!requiredError}
+            helperText={getErrorMessage(nApartamento)}
+            required
             className="w-full"
           />
         </DialogContent>
@@ -221,12 +334,23 @@ const EditButton = () => {
           <Button
             className="button"
             variant="contained"
-            onClick={handleClose}
+            onClick={() => !isLoading && handleEditEntrega()}
             autoFocus
           >
-            Salvar
+            {isLoading ? (
+              <div className="animate-spin rounded-full h-5 w-5 py-1 border-2 border-b-transparent border-white"></div>
+            ) : (
+              <span>Salvar</span>
+            )}
           </Button>
         </DialogActions>
+        {showAlert && (
+          <BottomAlert
+            showAlert={showAlert}
+            setShowAlert={setShowAlert}
+            editar={true}
+          />
+        )}
       </Dialog>
     </>
   );
@@ -252,7 +376,8 @@ const CreateDeliveryButton = () => {
   const refresh = useRefresh();
   const [open, setOpen] = React.useState(false);
   const [destinatario, setDestinatario] = React.useState("");
-  const [idApartamento, setIdApartamento] = React.useState("");
+  const [nApartamento, setNApartamento] = React.useState("");
+  const [isLoading, setLoading] = React.useState(false);
 
   const [requiredError, setRequiredError] = React.useState<string | null>(null);
   const [validationErrors, setValidationErrors] = React.useState<
@@ -260,7 +385,9 @@ const CreateDeliveryButton = () => {
   >({});
   const getErrorMessage = (value: string | undefined, error?: string) =>
     (!value && requiredError) || error;
-  const [showAlert, setShowAlert] = React.useState<boolean>(false);
+  const [showAlert, setShowAlert] = React.useState<
+    "confirmError" | "findApartamentoError" | undefined
+  >(undefined);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -275,7 +402,7 @@ const CreateDeliveryButton = () => {
     setRequiredError(null);
     const errors: Partial<Record<string, string>> = {};
 
-    if (!destinatario || !idApartamento) {
+    if (!destinatario || !nApartamento) {
       setRequiredError("Este campo é obrigatório");
       return;
     }
@@ -289,16 +416,34 @@ const CreateDeliveryButton = () => {
   };
 
   const handleCreateEntrega = async () => {
+    setLoading(true);
     const isValid = validateCreate();
 
     if (!isValid) {
       return;
     }
 
+    const idApartamento = await getApartamento(
+      nApartamento,
+      setShowAlert,
+      setLoading
+    );
+
+    const dataUTC = new Date();
+
+    // Obter o deslocamento do fuso horário em minutos
+    const deslocamentoMinutos = dataUTC.getTimezoneOffset();
+
+    // Criar uma nova data ajustada para o fuso horário local
+    const dataHoraLocal = new Date(
+      dataUTC.getTime() - deslocamentoMinutos * 60000
+    );
+
     try {
       await dataProvider.create("Entregas", {
         data: {
           destinatario: destinatario,
+          dataEntrega: dataHoraLocal,
           idApartamento: idApartamento,
         },
       });
@@ -306,14 +451,16 @@ const CreateDeliveryButton = () => {
       refresh();
     } catch (error) {
       console.log(error);
-      setShowAlert(true);
+      setShowAlert("confirmError");
     }
+    setLoading(false);
   };
 
   useEffect(() => {
     setDestinatario("");
-    setIdApartamento("");
+    setNApartamento("");
     setValidationErrors({});
+    setLoading(false);
     setRequiredError(null);
   }, [open]);
 
@@ -350,13 +497,13 @@ const CreateDeliveryButton = () => {
           />
           <MUITextField
             variant="outlined"
-            label="Apartamento"
-            value={idApartamento}
+            label="Nº do Apartamento"
+            value={nApartamento}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setIdApartamento(event.target.value);
+              setNApartamento(event.target.value);
             }}
-            error={!idApartamento && !!requiredError}
-            helperText={getErrorMessage(idApartamento)}
+            error={!nApartamento && !!requiredError}
+            helperText={getErrorMessage(nApartamento)}
             required
             className="w-full"
           />
@@ -372,13 +519,19 @@ const CreateDeliveryButton = () => {
           <Button
             className="button"
             variant="contained"
-            onClick={handleCreateEntrega}
+            onClick={() => !isLoading && handleCreateEntrega()}
             autoFocus
           >
-            Criar
+            {isLoading ? (
+              <div className="animate-spin rounded-full h-5 w-5 py-1 border-2 border-b-transparent border-white"></div>
+            ) : (
+              <span>Criar</span>
+            )}
           </Button>
         </DialogActions>
-        {showAlert && <BottomAlert setShowAlert={setShowAlert} />}
+        {showAlert && (
+          <BottomAlert showAlert={showAlert} setShowAlert={setShowAlert} />
+        )}
       </Dialog>
     </>
   );
@@ -477,9 +630,15 @@ const StyledList = styled(List)({
 });
 
 const BottomAlert = ({
+  showAlert,
   setShowAlert,
+  editar,
 }: {
-  setShowAlert: (value: boolean) => void;
+  showAlert: "confirmError" | "findApartamentoError" | undefined;
+  setShowAlert: (
+    value: "confirmError" | "findApartamentoError" | undefined
+  ) => void;
+  editar?: boolean;
 }) => (
   <div
     style={{
@@ -493,8 +652,14 @@ const BottomAlert = ({
   >
     <Alert
       type="error"
-      text="Ocorreu um erro ao criar a entrega. Por favor, tente novamente."
-      onClose={() => setShowAlert(false)}
+      text={
+        showAlert === "confirmError"
+          ? editar
+            ? "Ocorreu um erro ao editar a entrega. Por favor, tente novamente."
+            : "Ocorreu um erro ao criar a entrega. Por favor, tente novamente."
+          : "Cadastro do apartamento selecionado não encontrado."
+      }
+      onClose={() => setShowAlert(undefined)}
     />
   </div>
 );

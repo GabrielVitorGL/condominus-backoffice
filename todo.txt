@@ -5,31 +5,38 @@ Remoção - entregas
 Remoção - reservas
 Remoção - avisos
 Remoção - áreas comuns
+Remoção - apartamento
 Cadastro - reservas
 Cadastro - avisos
 Cadastro - áreas comuns
+Cadastro - apartamento
 Edição - moradores
 Edição - usuários
-Edição - entregas
 Edição - reservas
 Edição - avisos
 Edição - áreas comuns
 Tela de Avisos com Expand
+Botão de marcar entrega como concluída
 Adicionar botão de cadastrar morador
 Página de Reservas
 Página de Áreas Comuns
 Página de Avisos
+Página de Apartamentos
+Página de Feedbacks
 Textfield com listagem de recurso, que armazena o id do recurso selecionado
-
-Conectar edição
 
 
 DOING:
 
 
+
+
 OK:
 
 
+
+Edição - entregas
+Conectar edição
 Verificar expiração do token
 Remover botão de cadastrar novo morador
 Nova entrega/Editar entrega/checar campos da lista
