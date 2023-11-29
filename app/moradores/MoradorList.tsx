@@ -240,7 +240,7 @@ const RemoveButton = () => {
 
   return (
     <BulkDeleteWithConfirmButton
-      mutationMode="undoable"
+      mutationMode="pessimistic"
       confirmContent={
         listContext.selectedIds.length > 1
           ? "Tem certeza que deseja excluir os moradores selecionados?"

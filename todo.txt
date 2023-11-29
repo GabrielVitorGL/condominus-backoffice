@@ -1,7 +1,5 @@
 Usar API do sommee
 Cadastrar entrega receber transportadora
-Remoção - moradores
-Remoção - entregas
 Remoção - reservas
 Remoção - avisos
 Remoção - áreas comuns
@@ -35,6 +33,8 @@ OK:
 
 
 
+Remoção - moradores
+Remoção - entregas
 Edição - entregas
 Conectar edição
 Verificar expiração do token
