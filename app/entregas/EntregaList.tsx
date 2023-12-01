@@ -29,6 +29,8 @@ import {
   LocalShipping,
   AddRounded,
   EditRounded,
+  TaskAlt,
+  CheckCircle,
 } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
@@ -78,6 +80,8 @@ const DeliveryList = () => {
               </div>
             </>
           }
+          //! storeKey={false}
+          //! sort={{ field: "dataEntrega", order: "DESC" }}
           component="div"
           resource={`Entregas/GetAll`}
           perPage={999}
@@ -110,6 +114,7 @@ const CustomDatagrid = () => {
     <Datagrid
       bulkActionButtons={
         <Fragment>
+          <MarkAsWithdrawButton />
           <EditButton />
           <RemoveButton />
         </Fragment>
@@ -119,7 +124,7 @@ const CustomDatagrid = () => {
       <TextField source="destinatario" label="Destinatário" sortable={true} />
       <TextField
         source="numeroApartamento"
-        label="Nº do Apartamento"
+        label="Apartamento"
         sortable={false}
       />
       <DateField
@@ -162,6 +167,128 @@ const getApartamento = async (
   }
 
   return idApartamento;
+};
+
+const MarkAsWithdrawButton = () => {
+  const listContext = useListContext();
+  const refresh = useRefresh();
+  const [open, setOpen] = React.useState(false);
+  const [showAlert, setShowAlert] = React.useState<
+    "confirmError" | "findApartamentoError" | undefined
+  >(undefined);
+
+  const [isLoading, setLoading] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const isNotWithdrawal = () => {
+    const entregas = listContext.data.filter((x) =>
+      listContext.selectedIds.includes(x.id)
+    );
+
+    const notWithdraw = entregas.every((x) => x.dataRetirada == null);
+
+    return notWithdraw;
+  };
+
+  const handleMarkAsWithdraw = async () => {
+    setLoading(true);
+
+    const dataUTC = new Date();
+
+    // Obter o deslocamento do fuso horário em minutos
+    const deslocamentoMinutos = dataUTC.getTimezoneOffset();
+
+    // Criar uma nova data ajustada para o fuso horário local
+    const dataHoraLocal = new Date(
+      dataUTC.getTime() - deslocamentoMinutos * 60000
+    );
+
+    try {
+      const updatePromises = listContext.selectedIds.map(async (id) => {
+        await dataProvider.update("Entregas", {
+          data: {
+            id,
+            dataRetirada: dataHoraLocal,
+          },
+        });
+      });
+      await Promise.all(updatePromises);
+
+      handleClose();
+      refresh();
+    } catch (error) {
+      console.log(error);
+      setShowAlert("confirmError");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <>
+      <ReactAdminButton
+        size="small"
+        disabled={!isNotWithdrawal()}
+        onClick={handleClickOpen}
+      >
+        <>
+          <CheckCircle fontSize="small" className="mr-2" />
+          Marcar como retirada
+        </>
+      </ReactAdminButton>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" className="flex !text-xl !mt-1">
+          {"Marcar como retirada"}
+        </DialogTitle>
+        <DialogContent className="!py-4 !mb-2">
+          <span className="text-center text-black/60">
+            {listContext.selectedIds.length > 1
+              ? "Tem certeza que deseja marcar essas entregas como retiradas?"
+              : "Tem certeza que deseja marcar essa entrega como retirada?"}
+          </span>
+        </DialogContent>
+        <DialogActions sx={{ marginRight: "12px", marginBottom: "8px" }}>
+          <Button
+            sx={{ marginBottom: "-4px !important", marginRight: "12px" }}
+            className="button"
+            onClick={handleClose}
+          >
+            Cancelar
+          </Button>
+          <Button
+            className="button"
+            variant="contained"
+            onClick={() => !isLoading && handleMarkAsWithdraw()}
+            autoFocus
+          >
+            {isLoading ? (
+              <div className="animate-spin rounded-full h-5 w-5 py-1 border-2 border-b-transparent border-white"></div>
+            ) : (
+              <span>Confirmar</span>
+            )}
+          </Button>
+        </DialogActions>
+        {showAlert && (
+          <BottomAlert
+            showAlert={showAlert}
+            setShowAlert={setShowAlert}
+            editar={true}
+          />
+        )}
+      </Dialog>
+    </>
+  );
 };
 
 const EditButton = () => {
@@ -312,7 +439,7 @@ const EditButton = () => {
           />
           <MUITextField
             variant="outlined"
-            label="Nº do Apartamento"
+            label="Apartamento"
             value={nApartamento}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setNApartamento(event.target.value);
@@ -497,7 +624,7 @@ const CreateDeliveryButton = () => {
           />
           <MUITextField
             variant="outlined"
-            label="Nº do Apartamento"
+            label="Apartamento"
             value={nApartamento}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setNApartamento(event.target.value);

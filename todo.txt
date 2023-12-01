@@ -14,7 +14,6 @@ Edição - reservas
 Edição - avisos
 Edição - áreas comuns
 Tela de Avisos com Expand
-Botão de marcar entrega como concluída
 Adicionar botão de cadastrar morador
 Página de Reservas
 Página de Áreas Comuns
@@ -33,6 +32,8 @@ OK:
 
 
 
+Conferir ordenação de colunas com valores nulos
+Botão de marcar entrega como concluída
 Remoção - moradores
 Remoção - entregas
 Edição - entregas

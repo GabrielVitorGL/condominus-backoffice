@@ -54,11 +54,6 @@ const authProvider = {
     //
     // If this token is invalid, the server will respond with an error
     // and status code 401, calling the method `checkError`
-    if (window.location.href.includes("/auth/callback")) {
-      // the /auth/callback is a public route, so we need to let the request pass
-      // in this case
-      return Promise.resolve();
-    }
     if (localStorage.getItem("accessToken")) {
       return Promise.resolve();
     }
@@ -68,7 +63,7 @@ const authProvider = {
 
   getPermissions: () => Promise.resolve(),
 
-  getAuthURL: () => axios.get(`${BASE_URL}/auth/backoffice/authorization_url`),
+  getAuthURL: () => Promise.resolve(),
 
   setLogoutURL: (logoutUri) => localStorage.setItem("logoutURL", logoutUri),
 
