@@ -374,6 +374,7 @@ const EditButton = () => {
     const isValid = validateEdit();
 
     if (!isValid) {
+      setLoading(false);
       return;
     }
 
@@ -547,6 +548,7 @@ const CreateDeliveryButton = () => {
     const isValid = validateCreate();
 
     if (!isValid) {
+      setLoading(false);
       return;
     }
 

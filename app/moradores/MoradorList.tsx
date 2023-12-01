@@ -10,6 +10,7 @@ import {
   Button as ReactAdminButton,
   useListContext,
   SearchInput,
+  useRefresh,
 } from "react-admin";
 
 import { styled } from "@mui/material/styles";
@@ -26,6 +27,9 @@ import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../utils/exporter";
 import { SHOW_LOADING } from "../utils/constants";
+import { dataProvider } from "../dataProvider";
+import Alert from "../components/Alert";
+import { formatPhoneNumber, validatePhoneNumber } from "../utils/phoneNumber";
 
 const postFilters = [
   <SearchInput
@@ -113,6 +117,7 @@ const CustomDatagrid = () => {
 
 const EditButton = () => {
   const listContext = useListContext();
+  const refresh = useRefresh();
   const [open, setOpen] = React.useState(false);
 
   const [nome, setNome] = React.useState("");
@@ -120,7 +125,22 @@ const EditButton = () => {
   const [telefone, setTelefone] = React.useState("");
   const [apartamento, setApartamento] = React.useState("");
 
+  const [isLoading, setLoading] = React.useState(false);
+
+  const [requiredError, setRequiredError] = React.useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = React.useState<
+    Partial<Record<string, string>>
+  >({});
+  const getErrorMessage = (value: string | undefined, error?: string) =>
+    (!value && requiredError) || error;
+  const [showAlert, setShowAlert] = React.useState<
+    "confirmError" | "findApartamentoError" | undefined
+  >(undefined);
+
   useEffect(() => {
+    setLoading(false);
+    setValidationErrors({});
+
     const morador = listContext.data.find(
       (x) => x.id === listContext.selectedIds[0]
     );
@@ -132,6 +152,64 @@ const EditButton = () => {
       setApartamento(morador.idApartamento);
     }
   }, [listContext.data, listContext.selectedIds, open]);
+
+  let formattedPhoneNumber = formatPhoneNumber(telefone);
+  const validateEdit = () => {
+    setValidationErrors({});
+    setRequiredError(null);
+
+    const errors: Partial<Record<string, string>> = {};
+
+    if (!nome || !telefone) {
+      //! confirmar se vai checar idApartamento aqui
+      setRequiredError("Este campo é obrigatório");
+      return;
+    }
+
+    if (validatePhoneNumber(formattedPhoneNumber) === false) {
+      errors.telefone = "Telefone inválido";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    return true;
+  };
+
+  const handleEditMorador = async () => {
+    setLoading(true);
+    const isValid = validateEdit();
+
+    if (!isValid) {
+      setLoading(false);
+      return;
+    }
+
+    // const idApartamento = await getApartamento(
+    //   nApartamento,
+    //   setShowAlert,
+    //   setLoading
+    // );
+
+    try {
+      await dataProvider.update("Pessoas", {
+        data: {
+          id: listContext.selectedIds[0],
+          nome: nome,
+          telefone: formattedPhoneNumber,
+          cpf: cpf,
+        },
+      });
+      handleClose();
+      refresh();
+    } catch (error) {
+      console.log(error);
+      setShowAlert("confirmError");
+    }
+    setLoading(false);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -173,12 +251,16 @@ const EditButton = () => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setNome(event.target.value);
             }}
+            error={!nome && !!requiredError}
+            helperText={getErrorMessage(nome)}
+            required
             className="w-full !mb-7"
           />
           <MUITextField
             variant="outlined"
             label="CPF"
             value={cpf}
+            disabled //!
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setCpf(event.target.value);
             }}
@@ -191,6 +273,11 @@ const EditButton = () => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setTelefone(event.target.value);
             }}
+            error={
+              (!telefone && !!requiredError) || !!validationErrors.telefone
+            }
+            helperText={getErrorMessage(telefone, validationErrors.telefone)}
+            required
             className="w-full !mb-7"
           />
           <MUITextField
@@ -200,6 +287,7 @@ const EditButton = () => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setApartamento(event.target.value);
             }}
+            //! checar se vai validar aqui
             className="w-full"
           />
         </DialogContent>
@@ -214,12 +302,23 @@ const EditButton = () => {
           <Button
             className="button"
             variant="contained"
-            onClick={handleClose}
+            onClick={handleEditMorador}
             autoFocus
           >
-            Salvar
+            {isLoading ? (
+              <div className="animate-spin rounded-full h-5 w-5 py-1 border-2 border-b-transparent border-white"></div>
+            ) : (
+              <span>Salvar</span>
+            )}
           </Button>
         </DialogActions>
+        {showAlert && (
+          <BottomAlert
+            showAlert={showAlert}
+            setShowAlert={setShowAlert}
+            editar={true}
+          />
+        )}
       </Dialog>
     </>
   );
@@ -263,6 +362,41 @@ const CustomExportButton = () => {
 
   return <ExportButton label="Exportar Tabela" exporter={handleExportClick} />;
 };
+
+const BottomAlert = ({
+  showAlert,
+  setShowAlert,
+  editar,
+}: {
+  showAlert: "confirmError" | "findApartamentoError" | undefined;
+  setShowAlert: (
+    value: "confirmError" | "findApartamentoError" | undefined
+  ) => void;
+  editar?: boolean;
+}) => (
+  <div
+    style={{
+      position: "fixed",
+      bottom: "0px",
+      left: "0px",
+      paddingLeft: "20px",
+      paddingBottom: "20px",
+      zIndex: 1000,
+    }}
+  >
+    <Alert
+      type="error"
+      text={
+        showAlert === "confirmError"
+          ? editar
+            ? "Ocorreu um erro ao editar o morador. Por favor, tente novamente."
+            : "Ocorreu um erro ao criar o morador. Por favor, tente novamente."
+          : "Cadastro do apartamento selecionado não encontrado."
+      }
+      onClose={() => setShowAlert(undefined)}
+    />
+  </div>
+);
 
 const StyledList = styled(List)({
   "& .MuiToolbar-root:not(.RaBulkActionsToolbar-toolbar)": {

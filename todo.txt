@@ -1,5 +1,5 @@
 Usar API do sommee
-Cadastrar entrega receber transportadora
+Cadastro e edição de pessoa receber apartamento
 Remoção - reservas
 Remoção - avisos
 Remoção - áreas comuns
@@ -8,7 +8,6 @@ Cadastro - reservas
 Cadastro - avisos
 Cadastro - áreas comuns
 Cadastro - apartamento
-Edição - moradores
 Edição - usuários
 Edição - reservas
 Edição - avisos
@@ -32,6 +31,7 @@ OK:
 
 
 
+Edição - moradores
 Conferir ordenação de colunas com valores nulos
 Botão de marcar entrega como concluída
 Remoção - moradores
