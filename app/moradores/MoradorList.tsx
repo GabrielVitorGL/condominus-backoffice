@@ -59,7 +59,7 @@ const AccountList = () => {
         <StyledList
           actions={
             <>
-              <div className="flex flex-row items-center align-middle pt-6 pb-3">
+              <div className="flex flex-row items-center align-middle pt-3 pb-3">
                 <CustomExportButton />
               </div>
             </>
@@ -369,7 +369,7 @@ const CustomExportButton = () => {
     CustomExporter(resource, sheetName);
   };
 
-  return <ExportButton label="Exportar Tabela" exporter={handleExportClick} />;
+  return <ExportButton className="!ml-2 !py-2 !px-2 !text-sm" label="Exportar Tabela" exporter={handleExportClick} />;
 };
 
 const BottomAlert = ({

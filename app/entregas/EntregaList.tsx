@@ -74,9 +74,9 @@ const DeliveryList = () => {
         <StyledList
           actions={
             <>
-              <div className="flex flex-row items-center align-middle pt-3 pb-3">
+              <div className="flex flex-row items-center align-middle pt-2.5 pb-2.5">
                 <CreateDeliveryButton />
-                <CustomDropdownMenu />
+                <CustomExportButton />
               </div>
             </>
           }
@@ -607,7 +607,7 @@ const CreateDeliveryButton = () => {
       >
         <DialogTitle
           id="alert-dialog-title"
-          className="flex justify-center !text-2xl !mt-3"
+          className="flex justify-center !text-2xl !mt-3 !text-neutral-800"
         >
           {"CADASTRAR ENTREGA"}
         </DialogTitle>
@@ -705,6 +705,23 @@ const CustomDropdownMenu = () => {
         />
       </StyledMenu>
     </>
+  );
+};
+
+const CustomExportButton = () => {
+  const handleExportClick = () => {
+    const resource = "Entregas/GetAll";
+    const sheetName = "Entregas";
+
+    CustomExporter(resource, sheetName);
+  };
+
+  return (
+    <ExportButton
+      className="!ml-2  !py-2 !px-2 !text-sm"
+      label="Exportar Tabela"
+      exporter={handleExportClick}
+    />
   );
 };
 
