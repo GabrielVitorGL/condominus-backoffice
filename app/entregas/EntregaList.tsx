@@ -80,13 +80,13 @@ const DeliveryList = () => {
               </div>
             </>
           }
-          //! storeKey={false}
-          //! sort={{ field: "dataEntrega", order: "DESC" }}
           component="div"
           resource={`Entregas/GetAll`}
           perPage={999}
           pagination={false}
           filters={postFilters}
+          storeKey={false}
+          sort={{ field: "id", order: "DESC" }}
           empty={false}
         >
           <CustomDatagrid />

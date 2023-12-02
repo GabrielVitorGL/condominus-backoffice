@@ -17,7 +17,7 @@ const CustomAppBar: FC<AppBarProps> = memo((props: AppBarProps) => {
       <Toolbar disableGutters className="toolbar">
         <SidebarToggleButton className="menu-button" />
         <div style={{ flex: 1, margin: "0 8px" }}>
-          <span className="font-bold text-neutral-800 text-lg font-serif">
+          <span className="font-semibold text-white text-lg font-serif">
             CONDOMINUS - ADMINISTRAÇÃO
           </span>
         </div>
@@ -36,11 +36,11 @@ const StyledAppBar = muiStyled(MuiAppBar)({
     alignItems: "center",
     padding: "0 8px",
     minHeight: "56px",
-    background: `#3C9FAC`,
+    background: `#3594a1`,
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
   },
   "& .menu-button": {
-    color: "#212121",
+    color: "#fff",
     marginLeft: "2px",
     marginRight: "0.2em",
     fontSize: "1.5em",

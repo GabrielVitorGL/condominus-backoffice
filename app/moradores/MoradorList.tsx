@@ -30,6 +30,7 @@ import { SHOW_LOADING } from "../utils/constants";
 import { dataProvider } from "../dataProvider";
 import Alert from "../components/Alert";
 import { formatPhoneNumber, validatePhoneNumber } from "../utils/phoneNumber";
+import { formatDocument, validateDocument } from "../utils/validateDocument";
 
 const postFilters = [
   <SearchInput
@@ -68,6 +69,8 @@ const AccountList = () => {
           perPage={999}
           pagination={false}
           filters={postFilters}
+          storeKey={false}
+          sort={{ field: "id", order: "DESC" }}
           empty={false}
         >
           <CustomDatagrid />
@@ -153,7 +156,8 @@ const EditButton = () => {
     }
   }, [listContext.data, listContext.selectedIds, open]);
 
-  let formattedPhoneNumber = formatPhoneNumber(telefone);
+  let formattedPhoneNumber = formatPhoneNumber(telefone || "");
+  let formattedCpf = formatDocument(cpf || "");
   const validateEdit = () => {
     setValidationErrors({});
     setRequiredError(null);
@@ -168,6 +172,10 @@ const EditButton = () => {
 
     if (validatePhoneNumber(formattedPhoneNumber) === false) {
       errors.telefone = "Telefone inválido";
+    }
+
+    if (validateDocument(formattedCpf) === false) {
+      errors.cpf = "CPF inválido";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -199,7 +207,7 @@ const EditButton = () => {
           id: listContext.selectedIds[0],
           nome: nome,
           telefone: formattedPhoneNumber,
-          cpf: cpf,
+          cpf: formattedCpf,
         },
       });
       handleClose();
@@ -260,10 +268,11 @@ const EditButton = () => {
             variant="outlined"
             label="CPF"
             value={cpf}
-            disabled //!
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setCpf(event.target.value);
             }}
+            error={(!cpf && !!requiredError) || !!validationErrors.cpf}
+            helperText={getErrorMessage(cpf, validationErrors.cpf)}
             className="w-full !mb-7"
           />
           <MUITextField

@@ -6,6 +6,7 @@ import { useTranslate } from "ra-core";
 import { Tooltip, IconButton, Menu, PopoverOrigin } from "@mui/material";
 import { Logout } from "react-admin";
 import { useRouter } from "next/navigation";
+import { AccountCircle } from "@mui/icons-material";
 
 export const UserMenu = (props: UserMenuProps) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -24,7 +25,7 @@ export const UserMenu = (props: UserMenuProps) => {
     ),
     className,
     label = "ra.auth.user_menu",
-    icon = defaultIcon,
+    icon = defaultIcon2,
   } = props;
 
   const handleMenu = (event: any) => setAnchorEl(event.currentTarget);
@@ -38,12 +39,11 @@ export const UserMenu = (props: UserMenuProps) => {
       <Tooltip title={label && translate(label, { _: label })}>
         <IconButton
           color="inherit"
-          className="text-neutral-800"
           onClick={handleMenu}
           sx={{ "&:hover": { backgroundColor: "transparent" } }}
         >
           {icon}
-          <span className="ml-3 text-base tracking-wide	text-neutral-800">
+          <span className="ml-3 text-base tracking-wider">
             {localStorage.getItem("username")}
           </span>
         </IconButton>
@@ -111,6 +111,8 @@ const defaultIcon = (
     </span>
   </div>
 );
+
+const defaultIcon2 = <AccountCircle className="!text-[28px]" />;
 
 const StyledMenu = styled(Menu)({
   "& .MuiPaper-root": {

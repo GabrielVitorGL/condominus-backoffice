@@ -1,4 +1,6 @@
 Usar API do sommee
+Importar moradores por planilha
+Criação e download de planilha modelo
 Cadastro e edição de pessoa receber apartamento
 Remoção - reservas
 Remoção - avisos
@@ -8,7 +10,6 @@ Cadastro - reservas
 Cadastro - avisos
 Cadastro - áreas comuns
 Cadastro - apartamento
-Edição - usuários
 Edição - reservas
 Edição - avisos
 Edição - áreas comuns
@@ -31,6 +32,9 @@ OK:
 
 
 
+Edição - usuários
+Validação de telefone
+Validação de CPF
 Edição - moradores
 Conferir ordenação de colunas com valores nulos
 Botão de marcar entrega como concluída
