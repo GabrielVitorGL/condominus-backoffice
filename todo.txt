@@ -1,4 +1,7 @@
+TO DO:
+
 Usar API do sommee
+Usuário porteiro visualizar apenas página de entregas e avisos se houver
 Importar moradores por planilha
 Criação e download de planilha modelo
 Cadastro e edição de pessoa receber apartamento
@@ -15,7 +18,6 @@ Edição - avisos
 Edição - áreas comuns
 Tela de Avisos com Expand
 Adicionar botão de cadastrar morador
-Página de Reservas
 Página de Áreas Comuns
 Página de Avisos
 Página de Apartamentos
@@ -23,14 +25,15 @@ Página de Feedbacks
 Textfield com listagem de recurso, que armazena o id do recurso selecionado
 
 
+
+
 DOING:
 
 
+Página de Reservas
 
 
 OK:
-
-
 
 Remover botão de exportar do dropdown
 Edição - usuários

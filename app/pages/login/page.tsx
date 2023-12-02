@@ -1,12 +1,12 @@
 "use client";
 import Image from "next/image";
-import TextField from "../components/TextField";
-import Button from "../components/Button";
+import TextField from "../../components/TextField";
+import Button from "../../components/Button";
 import { Person, Lock } from "@mui/icons-material/";
 import { SetStateAction, useState } from "react";
-import CondominusLogo from "../assets/logo.png";
+import CondominusLogo from "../../assets/logo.png";
 import { useRouter } from "next/navigation";
-import authProvider from "../authProvider";
+import authProvider from "../../providers/authProvider";
 
 export default function Login() {
   // const router = useRouter();

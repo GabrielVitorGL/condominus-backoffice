@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { BASE_URL } from "./utils/constants";
+import { BASE_URL } from "../utils/constants";
 
 const authProvider = {
   login: ({ username, password }) => {

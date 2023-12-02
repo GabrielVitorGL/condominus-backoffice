@@ -34,10 +34,10 @@ import {
 } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
-import CustomExporter from "../utils/exporter";
-import { SHOW_LOADING } from "../utils/constants";
-import { dataProvider } from "../dataProvider";
-import Alert from "../components/Alert";
+import CustomExporter from "../../utils/exporter";
+import { SHOW_LOADING } from "../../utils/constants";
+import { dataProvider } from "../../providers/dataProvider";
+import Alert from "../../components/Alert";
 
 const postFilters = [
   <SearchInput

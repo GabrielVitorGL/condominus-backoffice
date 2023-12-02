@@ -1,4 +1,4 @@
-import { dataProvider } from "../dataProvider";
+import { dataProvider } from "../providers/dataProvider";
 import * as XLSX from "xlsx";
 
 export default function CustomExporter(resource: string, sheetname: string) {

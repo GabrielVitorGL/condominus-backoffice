@@ -1,7 +1,6 @@
 "use client";
 import React, { Fragment, useEffect } from "react";
 import {
-  FunctionField,
   TextField,
   Datagrid,
   List,
@@ -22,15 +21,14 @@ import {
   DialogContent,
   TextField as MUITextField,
 } from "@mui/material";
-import { Person, EditRounded } from "@mui/icons-material";
+import { AccountBoxOutlined, EditRounded } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
-import CustomExporter from "../utils/exporter";
-import { SHOW_LOADING } from "../utils/constants";
-import { dataProvider } from "../dataProvider";
-import Alert from "../components/Alert";
-import { formatPhoneNumber, validatePhoneNumber } from "../utils/phoneNumber";
-import { formatDocument, validateDocument } from "../utils/validateDocument";
+import CustomExporter from "../../utils/exporter";
+import { SHOW_LOADING } from "../../utils/constants";
+import Alert from "../../components/Alert";
+import validateEmail from "../../utils/validators/validateEmail";
+import { dataProvider } from "../../providers/dataProvider";
 
 const postFilters = [
   <SearchInput
@@ -41,10 +39,12 @@ const postFilters = [
   />,
 ];
 
-const AccountList = () => {
+const UserList = () => {
   return (
     <PrivatePage>
-      <NavigationHeader routePath={[{ icon: Person, title: "Moradores" }]} />
+      <NavigationHeader
+        routePath={[{ icon: AccountBoxOutlined, title: "Usuários" }]}
+      />
       <div
         style={{
           display: "flex",
@@ -53,7 +53,7 @@ const AccountList = () => {
           padding: "20px 32px",
         }}
       >
-        <span style={{ fontWeight: 700, fontSize: "26px" }}>Moradores</span>
+        <span style={{ fontWeight: 700, fontSize: "26px" }}>Usuários</span>
         <div className="bg-main mt-1" style={{ height: "3px" }} />
 
         <StyledList
@@ -65,7 +65,7 @@ const AccountList = () => {
             </>
           }
           component="div"
-          resource={`Pessoas/GetMoradores`}
+          resource={`Usuarios/GetAll`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -105,15 +105,7 @@ const CustomDatagrid = () => {
     >
       <TextField source="id" label="Id" sortable={true} />
       <TextField source="nome" label="Nome" sortable={true} />
-      <TextField source="telefone" label="Telefone" sortable={false} />
-      <TextField source="cpf" label="CPF" sortable={false} />
-      <FunctionField
-        label="Dependentes"
-        render={(record: any) => {
-          if (record.dependentes == null) return 0;
-          return record.dependentes.length();
-        }}
-      />
+      <TextField source="email" label="Email" sortable={false} />
     </Datagrid>
   );
 };
@@ -124,9 +116,7 @@ const EditButton = () => {
   const [open, setOpen] = React.useState(false);
 
   const [nome, setNome] = React.useState("");
-  const [cpf, setCpf] = React.useState("");
-  const [telefone, setTelefone] = React.useState("");
-  const [apartamento, setApartamento] = React.useState("");
+  const [email, setEmail] = React.useState("");
 
   const [isLoading, setLoading] = React.useState(false);
 
@@ -136,46 +126,37 @@ const EditButton = () => {
   >({});
   const getErrorMessage = (value: string | undefined, error?: string) =>
     (!value && requiredError) || error;
-  const [showAlert, setShowAlert] = React.useState<
-    "confirmError" | "findApartamentoError" | undefined
-  >(undefined);
+  const [showAlert, setShowAlert] = React.useState<"confirmError" | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     setLoading(false);
     setValidationErrors({});
 
-    const morador = listContext.data.find(
+    const usuario = listContext.data.find(
       (x) => x.id === listContext.selectedIds[0]
     );
 
-    if (morador !== undefined) {
-      setNome(morador.nome);
-      setCpf(morador.cpf);
-      setTelefone(morador.telefone);
-      setApartamento(morador.idApartamento);
+    if (usuario !== undefined) {
+      setNome(usuario.nome);
+      setEmail(usuario.email);
     }
   }, [listContext.data, listContext.selectedIds, open]);
 
-  let formattedPhoneNumber = formatPhoneNumber(telefone || "");
-  let formattedCpf = formatDocument(cpf || "");
   const validateEdit = () => {
     setValidationErrors({});
     setRequiredError(null);
 
     const errors: Partial<Record<string, string>> = {};
 
-    if (!nome || !telefone) {
-      //! confirmar se vai checar idApartamento aqui
+    if (!email) {
       setRequiredError("Este campo é obrigatório");
       return;
     }
 
-    if (validatePhoneNumber(formattedPhoneNumber) === false) {
-      errors.telefone = "Telefone inválido";
-    }
-
-    if (validateDocument(formattedCpf) === false) {
-      errors.cpf = "CPF inválido";
+    if (validateEmail(email) === false) {
+      errors.email = "Email inválido";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -186,7 +167,7 @@ const EditButton = () => {
     return true;
   };
 
-  const handleEditMorador = async () => {
+  const handleEditUsuario = async () => {
     setLoading(true);
     const isValid = validateEdit();
 
@@ -195,19 +176,12 @@ const EditButton = () => {
       return;
     }
 
-    // const idApartamento = await getApartamento(
-    //   nApartamento,
-    //   setShowAlert,
-    //   setLoading
-    // );
-
     try {
-      await dataProvider.update("Pessoas", {
+      await dataProvider.update("Usuarios", {
         data: {
           id: listContext.selectedIds[0],
           nome: nome,
-          telefone: formattedPhoneNumber,
-          cpf: formattedCpf,
+          email: email,
         },
       });
       handleClose();
@@ -236,7 +210,7 @@ const EditButton = () => {
       >
         <>
           <EditRounded fontSize="small" className="mr-2" />
-          Editar morador
+          Editar usuário
         </>
       </ReactAdminButton>
       <Dialog
@@ -249,55 +223,29 @@ const EditButton = () => {
           id="alert-dialog-title"
           className="flex justify-center !text-2xl !mt-3"
         >
-          {"EDITAR MORADOR"}
+          {"EDITAR USUÁRIO"}
         </DialogTitle>
         <DialogContent className="!py-4 !mb-2 !w-[500px]">
           <MUITextField
             variant="outlined"
             label="Nome"
+            disabled
             value={nome}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setNome(event.target.value);
             }}
-            error={!nome && !!requiredError}
-            helperText={getErrorMessage(nome)}
-            required
             className="w-full !mb-7"
           />
           <MUITextField
             variant="outlined"
-            label="CPF"
-            value={cpf}
+            label="Email"
+            value={email}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setCpf(event.target.value);
+              setEmail(event.target.value);
             }}
-            error={(!cpf && !!requiredError) || !!validationErrors.cpf}
-            helperText={getErrorMessage(cpf, validationErrors.cpf)}
+            error={(!email && !!requiredError) || !!validationErrors.email}
+            helperText={getErrorMessage(email, validationErrors.email)}
             className="w-full !mb-7"
-          />
-          <MUITextField
-            variant="outlined"
-            label="Telefone"
-            value={telefone}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setTelefone(event.target.value);
-            }}
-            error={
-              (!telefone && !!requiredError) || !!validationErrors.telefone
-            }
-            helperText={getErrorMessage(telefone, validationErrors.telefone)}
-            required
-            className="w-full !mb-7"
-          />
-          <MUITextField
-            variant="outlined"
-            label="Apartamento"
-            value={apartamento}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setApartamento(event.target.value);
-            }}
-            //! checar se vai validar aqui
-            className="w-full"
           />
         </DialogContent>
         <DialogActions sx={{ marginRight: "12px", marginBottom: "8px" }}>
@@ -311,7 +259,7 @@ const EditButton = () => {
           <Button
             className="button"
             variant="contained"
-            onClick={handleEditMorador}
+            onClick={handleEditUsuario}
             autoFocus
           >
             {isLoading ? (
@@ -336,14 +284,14 @@ const EditButton = () => {
 const RemoveButton = () => {
   const listContext = useListContext();
 
-  const morador = listContext.data.find(
+  const usuario = listContext.data.find(
     (x) => x.id == listContext.selectedIds[0]
   );
 
-  let nomeMorador = "";
+  let nomeUsuario = "";
 
-  if (typeof morador !== "undefined") {
-    nomeMorador = morador.nome;
+  if (typeof usuario !== "undefined") {
+    nomeUsuario = usuario.nome;
   }
 
   return (
@@ -351,25 +299,31 @@ const RemoveButton = () => {
       mutationMode="pessimistic"
       confirmContent={
         listContext.selectedIds.length > 1
-          ? "Tem certeza que deseja excluir os moradores selecionados?"
-          : `Tem certeza que deseja excluir o morador ${
-              nomeMorador !== "" ? `"` + nomeMorador + `"` : "selecionado"
+          ? "Tem certeza que deseja excluir os usuários selecionados?"
+          : `Tem certeza que deseja excluir o usuário ${
+              nomeUsuario !== "" ? `"` + nomeUsuario + `"` : "selecionado"
             }?`
       }
-      resource={listContext.selectedIds.length > 1 ? "moradores" : "morador"}
+      resource={"usuário"}
     />
   );
 };
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "Pessoas/GetMoradores";
-    const sheetName = "Moradores";
+    const resource = "Usuarios/GetAll";
+    const sheetName = "Usuarios";
 
     CustomExporter(resource, sheetName);
   };
 
-  return <ExportButton className="!ml-2 !py-2 !px-2 !text-sm" label="Exportar Tabela" exporter={handleExportClick} />;
+  return (
+    <ExportButton
+      className="!ml-2 !py-2 !px-2 !text-sm"
+      label="Exportar Tabela"
+      exporter={handleExportClick}
+    />
+  );
 };
 
 const BottomAlert = ({
@@ -377,10 +331,8 @@ const BottomAlert = ({
   setShowAlert,
   editar,
 }: {
-  showAlert: "confirmError" | "findApartamentoError" | undefined;
-  setShowAlert: (
-    value: "confirmError" | "findApartamentoError" | undefined
-  ) => void;
+  showAlert: "confirmError" | undefined;
+  setShowAlert: (value: "confirmError" | undefined) => void;
   editar?: boolean;
 }) => (
   <div
@@ -398,9 +350,9 @@ const BottomAlert = ({
       text={
         showAlert === "confirmError"
           ? editar
-            ? "Ocorreu um erro ao editar o morador. Por favor, tente novamente."
-            : "Ocorreu um erro ao criar o morador. Por favor, tente novamente."
-          : "Cadastro do apartamento selecionado não encontrado."
+            ? "Ocorreu um erro ao editar o usuário. Por favor, tente novamente."
+            : "Ocorreu um erro ao criar o usuário. Por favor, tente novamente."
+          : "Ocorreu um erro. Favor tente novamente."
       }
       onClose={() => setShowAlert(undefined)}
     />
@@ -451,4 +403,4 @@ const StyledList = styled(List)({
   },
 });
 
-export default AccountList;
+export default UserList;

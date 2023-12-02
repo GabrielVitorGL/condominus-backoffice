@@ -2,15 +2,15 @@
 import React from "react";
 import { Admin, Resource, ListGuesser, ShowGuesser } from "react-admin";
 import { Routes, Route } from "react-router-dom";
-import AccountList from "./moradores/MoradorList";
-import UserList from "./usuarios/UsuarioList";
-import DeliveryList from "./entregas/EntregaList";
-import authProvider from "./authProvider";
-import { dataProvider } from "./dataProvider";
+import AccountList from "./pages/moradores/MoradorList";
+import UserList from "./pages/usuarios/UsuarioList";
+import DeliveryList from "./pages/entregas/EntregaList";
+import authProvider from "./providers/authProvider";
+import { dataProvider } from "./providers/dataProvider";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import ptBr from "ra-language-pt-br";
 import MainLayout from "./layout/Layout";
-import Login from "./login/page";
+import Login from "./pages/login/page";
 
 function AdminApp() {
   return (
