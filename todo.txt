@@ -6,11 +6,13 @@ Importar moradores por planilha
 Criação e download de planilha modelo
 Cadastro e edição de pessoa receber apartamento (na api ainda não recebe esse campo. Buscar de forma similar a que acontece no cadastro de entregas)
 Remoção - apartamento
+Remoção - acesso
 Cadastro - apartamento
 Edição - apartamento
 Adicionar botão de cadastrar morador
 Página de Apartamentos
 Página de Feedbacks
+Página de Acesso
 
 
 
