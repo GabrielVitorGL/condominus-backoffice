@@ -10,6 +10,7 @@ import {
   useListContext,
   SearchInput,
   useRefresh,
+  DateField,
 } from "react-admin";
 
 import { styled } from "@mui/material/styles";
@@ -106,6 +107,20 @@ const CustomDatagrid = () => {
       <TextField source="id" label="Id" sortable={true} />
       <TextField source="nome" label="Nome" sortable={true} />
       <TextField source="email" label="Email" sortable={false} />
+      <DateField
+        source="dataAcesso"
+        label="Data de Acesso"
+        sortable={true}
+        showTime
+        locales="pt-BR"
+        options={{
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        }}
+      />
     </Datagrid>
   );
 };

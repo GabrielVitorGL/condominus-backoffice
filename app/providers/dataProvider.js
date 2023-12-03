@@ -306,7 +306,16 @@ export const dataProvider = {
         .then((res) => {
           resolve({ data: res.data });
         })
-        .catch((e) => reject(e));
+        .catch((e) => {
+          if (e.request.status == 400) {
+            if (formattedResource == "AreasComuns") {
+              reject(
+                "Você não pode excluir essa área pois existem reservas cadastradas para ela."
+              );
+            }
+          }
+          reject(e);
+        });
     });
   },
 

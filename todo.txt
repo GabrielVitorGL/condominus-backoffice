@@ -1,22 +1,16 @@
 TO DO:
 
 Usar API do sommee
-Usuário porteiro visualizar apenas página de entregas e avisos se houver
+Usuário porteiro visualizar apenas página de entregas e acesso se houver
 Importar moradores por planilha
 Criação e download de planilha modelo
-Cadastro e edição de pessoa receber apartamento
-Remoção - avisos
+Cadastro e edição de pessoa receber apartamento (na api ainda não recebe esse campo. Buscar de forma similar a que acontece no cadastro de entregas)
 Remoção - apartamento
-Cadastro - avisos
 Cadastro - apartamento
 Edição - apartamento
-Edição - avisos
-Tela de Avisos com Expand
 Adicionar botão de cadastrar morador
-Página de Avisos
 Página de Apartamentos
 Página de Feedbacks
-
 
 
 
@@ -27,6 +21,14 @@ DOING:
 
 OK:
 
+Adicionar data de acesso em usuários
+TextField de mensagem ser multiline
+Remoção - avisos
+Tela de Avisos/Feedback com Expand
+Cadastro - avisos
+Edição - avisos
+Página de Avisos
+Exibir mensagem de erro ao tentar excluir área comum com reservas cadastradas
 Edição - áreas comuns
 Remoção - áreas comuns
 Cadastro - áreas comuns

@@ -10,6 +10,7 @@ import {
   useListContext,
   SearchInput,
   useRefresh,
+  DateField,
 } from "react-admin";
 
 import { styled } from "@mui/material/styles";
@@ -21,7 +22,12 @@ import {
   DialogContent,
   TextField as MUITextField,
 } from "@mui/material";
-import { AddRounded, EditRounded, Celebration } from "@mui/icons-material";
+import {
+  AddRounded,
+  EditRounded,
+  Celebration,
+  Campaign,
+} from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../../utils/exporter";
@@ -32,18 +38,16 @@ import Alert from "../../components/Alert";
 const postFilters = [
   <SearchInput
     key="search"
-    source="nome"
-    placeholder="Buscar por nome"
+    source="assunto"
+    placeholder="Buscar por assunto"
     alwaysOn
   />,
 ];
 
-const CommonAreaList = () => {
+const AdviceList = () => {
   return (
     <PrivatePage>
-      <NavigationHeader
-        routePath={[{ icon: Celebration, title: "Áreas Comuns" }]}
-      />
+      <NavigationHeader routePath={[{ icon: Campaign, title: "Avisos" }]} />
       <div
         style={{
           display: "flex",
@@ -52,20 +56,20 @@ const CommonAreaList = () => {
           padding: "20px 32px",
         }}
       >
-        <span style={{ fontWeight: 700, fontSize: "26px" }}>Áreas Comuns</span>
+        <span style={{ fontWeight: 700, fontSize: "26px" }}>Avisos</span>
         <div className="bg-main mt-1" style={{ height: "3px" }} />
 
         <StyledList
           actions={
             <>
               <div className="flex flex-row items-center align-middle pt-2.5 pb-2.5">
-                <CreateCommonAreaButton />
+                <CreateAdviceButton />
                 <CustomExportButton />
               </div>
             </>
           }
           component="div"
-          resource={`AreasComuns/GetAll`}
+          resource={`Avisos/GetAll`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -104,7 +108,22 @@ const CustomDatagrid = () => {
       }
     >
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="nome" label="Nome" sortable={true} />
+      <TextField source="assunto" label="Assunto" sortable={true} />
+      <TextField source="mensagem" label="Mensagem" sortable={false} />
+      <DateField
+        source="dataEnvio"
+        label="Data de Envio"
+        sortable={true}
+        showTime
+        locales="pt-BR"
+        options={{
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        }}
+      />
     </Datagrid>
   );
 };
@@ -114,14 +133,12 @@ const EditButton = () => {
   const refresh = useRefresh();
   const [open, setOpen] = React.useState(false);
 
-  const [nome, setNome] = React.useState("");
+  const [assunto, setAssunto] = React.useState("");
+  const [mensagem, setMensagem] = React.useState("");
 
   const [isLoading, setLoading] = React.useState(false);
 
   const [requiredError, setRequiredError] = React.useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = React.useState<
-    Partial<Record<string, string>>
-  >({});
   const getErrorMessage = (value: string | undefined, error?: string) =>
     (!value && requiredError) || error;
   const [showAlert, setShowAlert] = React.useState<"confirmError" | undefined>(
@@ -131,12 +148,13 @@ const EditButton = () => {
   useEffect(() => {
     setShowAlert(undefined);
 
-    const areaComum = listContext.data.find(
+    const aviso = listContext.data.find(
       (x) => x.id === listContext.selectedIds[0]
     );
 
-    if (areaComum !== undefined) {
-      setNome(areaComum.nome);
+    if (aviso !== undefined) {
+      setAssunto(aviso.assunto);
+      setMensagem(aviso.mensagem);
     }
   }, [listContext.data, listContext.selectedIds, open]);
 
@@ -149,25 +167,17 @@ const EditButton = () => {
   };
 
   const validateEdit = () => {
-    setValidationErrors({});
     setRequiredError(null);
 
-    const errors: Partial<Record<string, string>> = {};
-
-    if (!nome) {
+    if (!assunto || !mensagem) {
       setRequiredError("Este campo é obrigatório");
-      return;
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors);
       return;
     }
 
     return true;
   };
 
-  const handleEditAreaComum = async () => {
+  const handleEditAviso = async () => {
     setLoading(true);
     const isValid = validateEdit();
 
@@ -177,10 +187,11 @@ const EditButton = () => {
     }
 
     try {
-      await dataProvider.update("AreasComuns", {
+      await dataProvider.update("Avisos", {
         data: {
           id: listContext.selectedIds[0],
-          nome: nome,
+          assunto: assunto,
+          mensagem: mensagem,
         },
       });
       handleClose();
@@ -201,7 +212,7 @@ const EditButton = () => {
       >
         <>
           <EditRounded fontSize="small" className="mr-2" />
-          Editar área comum
+          Editar aviso
         </>
       </ReactAdminButton>
       <Dialog
@@ -214,20 +225,33 @@ const EditButton = () => {
           id="alert-dialog-title"
           className="flex justify-center !text-2xl !mt-3"
         >
-          {"EDITAR ÁREA COMUM"}
+          {"EDITAR AVISO"}
         </DialogTitle>
-        <DialogContent className="!py-4 !mb-2 !w-[500px]">
+        <DialogContent className="!py-4 !mb-2 !w-[600px]">
           <MUITextField
             variant="outlined"
-            label="Nome"
-            value={nome}
+            label="Assunto"
+            value={assunto}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setNome(event.target.value);
+              setAssunto(event.target.value);
             }}
-            error={!nome && !!requiredError}
-            helperText={getErrorMessage(nome)}
+            error={!assunto && !!requiredError}
+            helperText={getErrorMessage(assunto)}
             required
-            className="w-full !mb-3"
+            className="w-full !mb-7"
+          />
+          <MUITextField
+            variant="outlined"
+            label="Mensagem"
+            value={mensagem}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setMensagem(event.target.value);
+            }}
+            error={!mensagem && !!requiredError}
+            helperText={getErrorMessage(mensagem)}
+            required
+            multiline
+            className="w-full"
           />
         </DialogContent>
         <DialogActions sx={{ marginRight: "12px", marginBottom: "8px" }}>
@@ -241,7 +265,7 @@ const EditButton = () => {
           <Button
             className="button"
             variant="contained"
-            onClick={() => !isLoading && handleEditAreaComum()}
+            onClick={() => !isLoading && handleEditAviso()}
             autoFocus
           >
             {isLoading ? (
@@ -271,26 +295,24 @@ const RemoveButton = () => {
       mutationMode="pessimistic"
       confirmContent={
         listContext.selectedIds.length > 1
-          ? "Tem certeza que deseja excluir as áreas comuns selecionadas?"
-          : `Tem certeza que deseja excluir essa área comum?`
+          ? "Tem certeza que deseja excluir os avisos selecionados?"
+          : `Tem certeza que deseja excluir esse aviso?`
       }
-      resource={
-        listContext.selectedIds.length > 1 ? "áreas comuns" : "área comum"
-      }
+      resource={"aviso"}
     />
   );
 };
 
-const CreateCommonAreaButton = () => {
+const CreateAdviceButton = () => {
   const refresh = useRefresh();
   const [open, setOpen] = React.useState(false);
-  const [nome, setNome] = React.useState("");
+
+  const [assunto, setAssunto] = React.useState("");
+  const [mensagem, setMensagem] = React.useState("");
+
   const [isLoading, setLoading] = React.useState(false);
 
   const [requiredError, setRequiredError] = React.useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = React.useState<
-    Partial<Record<string, string>>
-  >({});
   const getErrorMessage = (value: string | undefined, error?: string) =>
     (!value && requiredError) || error;
   const [showAlert, setShowAlert] = React.useState<"confirmError" | undefined>(
@@ -306,24 +328,17 @@ const CreateCommonAreaButton = () => {
   };
 
   const validateCreate = () => {
-    setValidationErrors({});
     setRequiredError(null);
-    const errors: Partial<Record<string, string>> = {};
 
-    if (!nome) {
+    if (!assunto || !mensagem) {
       setRequiredError("Este campo é obrigatório");
-      return;
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors);
       return;
     }
 
     return true;
   };
 
-  const handleCreateAreaComum = async () => {
+  const handleCreateAviso = async () => {
     setLoading(true);
     const isValid = validateCreate();
 
@@ -332,10 +347,22 @@ const CreateCommonAreaButton = () => {
       return;
     }
 
+    const dataUTC = new Date();
+
+    // Obter o deslocamento do fuso horário em minutos
+    const deslocamentoMinutos = dataUTC.getTimezoneOffset();
+
+    // Criar uma nova data ajustada para o fuso horário local
+    const dataHoraLocal = new Date(
+      dataUTC.getTime() - deslocamentoMinutos * 60000
+    );
+
     try {
-      await dataProvider.create("AreasComuns", {
+      await dataProvider.create("Avisos", {
         data: {
-          nome: nome,
+          assunto: assunto,
+          mensagem: mensagem,
+          dataEnvio: dataHoraLocal,
         },
       });
       handleClose();
@@ -349,8 +376,8 @@ const CreateCommonAreaButton = () => {
 
   useEffect(() => {
     setShowAlert(undefined);
-    setNome("");
-    setValidationErrors({});
+    setAssunto("");
+    setMensagem("");
     setLoading(false);
     setRequiredError(null);
   }, [open]);
@@ -359,7 +386,7 @@ const CreateCommonAreaButton = () => {
     <>
       <Button onClick={handleClickOpen}>
         <AddRounded fontSize="small" />
-        <span className="ml-1.5 mt-[3px]">Nova área comum</span>
+        <span className="ml-1.5 mt-[3px]">Novo aviso</span>
       </Button>
       <Dialog
         open={open}
@@ -371,20 +398,33 @@ const CreateCommonAreaButton = () => {
           id="alert-dialog-title"
           className="flex justify-center !text-2xl !mt-3 !text-neutral-800"
         >
-          {"CADASTRAR ÁREA COMUM"}
+          {"CADASTRAR AVISO"}
         </DialogTitle>
-        <DialogContent className="!py-4 !mb-2 !w-[500px]">
+        <DialogContent className="!py-4 !mb-2 !w-[600px]">
           <MUITextField
             variant="outlined"
-            label="Nome"
-            value={nome}
+            label="Assunto"
+            value={assunto}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setNome(event.target.value);
+              setAssunto(event.target.value);
             }}
-            error={!nome && !!requiredError}
-            helperText={getErrorMessage(nome)}
+            error={!assunto && !!requiredError}
+            helperText={getErrorMessage(assunto)}
             required
-            className="w-full !mb-3"
+            className="w-full !mb-7"
+          />
+          <MUITextField
+            variant="outlined"
+            label="Mensagem"
+            value={mensagem}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setMensagem(event.target.value);
+            }}
+            error={!mensagem && !!requiredError}
+            helperText={getErrorMessage(mensagem)}
+            multiline
+            required
+            className="w-full"
           />
         </DialogContent>
         <DialogActions sx={{ marginRight: "12px", marginBottom: "8px" }}>
@@ -398,7 +438,7 @@ const CreateCommonAreaButton = () => {
           <Button
             className="button"
             variant="contained"
-            onClick={() => !isLoading && handleCreateAreaComum()}
+            onClick={() => !isLoading && handleCreateAviso()}
             autoFocus
           >
             {isLoading ? (
@@ -418,8 +458,8 @@ const CreateCommonAreaButton = () => {
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "AreasComuns/GetAll";
-    const sheetName = "AreasComuns";
+    const resource = "Avisos/GetAll";
+    const sheetName = "Avisos";
 
     CustomExporter(resource, sheetName);
   };
@@ -500,12 +540,12 @@ const BottomAlert = ({
       type="error"
       text={
         editar
-          ? "Ocorreu um erro ao editar a área comum. Por favor, tente novamente."
-          : "Ocorreu um erro ao criar a área comum. Por favor, tente novamente."
+          ? "Ocorreu um erro ao editar o aviso. Por favor, tente novamente."
+          : "Ocorreu um erro ao criar o aviso. Por favor, tente novamente."
       }
       onClose={() => setShowAlert(undefined)}
     />
   </div>
 );
 
-export default CommonAreaList;
+export default AdviceList;
