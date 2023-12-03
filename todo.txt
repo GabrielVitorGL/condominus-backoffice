@@ -13,6 +13,8 @@ Adicionar botão de cadastrar morador
 Página de Apartamentos
 Página de Feedbacks
 Página de Acesso
+No login guardar id da pessoa no localStorage
+No login checar se tipo pessoa é sindico ou porteiro, e guardar no localStorage
 
 
 
