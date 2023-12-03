@@ -6,17 +6,13 @@ Importar moradores por planilha
 Criação e download de planilha modelo
 Cadastro e edição de pessoa receber apartamento
 Remoção - avisos
-Remoção - áreas comuns
 Remoção - apartamento
 Cadastro - avisos
-Cadastro - áreas comuns
 Cadastro - apartamento
 Edição - apartamento
 Edição - avisos
-Edição - áreas comuns
 Tela de Avisos com Expand
 Adicionar botão de cadastrar morador
-Página de Áreas Comuns
 Página de Avisos
 Página de Apartamentos
 Página de Feedbacks
@@ -29,9 +25,12 @@ DOING:
 
 
 
-
 OK:
 
+Edição - áreas comuns
+Remoção - áreas comuns
+Cadastro - áreas comuns
+Página de Áreas Comuns
 Não exibir os segundos nos campos de data e hora
 Edição - reservas
 Remoção - reservas

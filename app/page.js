@@ -6,6 +6,7 @@ import AccountList from "./pages/moradores/MoradorList";
 import UserList from "./pages/usuarios/UsuarioList";
 import DeliveryList from "./pages/entregas/EntregaList";
 import ReservationList from "./pages/reservas/ReservaList";
+import CommonAreaList from "./pages/areas-comuns/AreaComumList";
 import authProvider from "./providers/authProvider";
 import { dataProvider } from "./providers/dataProvider";
 import polyglotI18nProvider from "ra-i18n-polyglot";
@@ -28,7 +29,7 @@ function AdminApp() {
       <Resource name="/usuarios" list={UserList} show={ShowGuesser} />
       <Resource name="/entregas" list={DeliveryList} show={ShowGuesser} />
       <Resource name="/reservas" list={ReservationList} show={ShowGuesser} />
-      <Resource name="/areas" />
+      <Resource name="/areas" list={CommonAreaList} show={ShowGuesser} />
       <Resource name="/avisos" />
     </Admin>
   );
