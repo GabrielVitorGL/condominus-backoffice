@@ -5,15 +5,13 @@ Usuário porteiro visualizar apenas página de entregas e avisos se houver
 Importar moradores por planilha
 Criação e download de planilha modelo
 Cadastro e edição de pessoa receber apartamento
-Remoção - reservas
 Remoção - avisos
 Remoção - áreas comuns
 Remoção - apartamento
-Cadastro - reservas
 Cadastro - avisos
 Cadastro - áreas comuns
 Cadastro - apartamento
-Edição - reservas
+Edição - apartamento
 Edição - avisos
 Edição - áreas comuns
 Tela de Avisos com Expand
@@ -22,7 +20,6 @@ Página de Áreas Comuns
 Página de Avisos
 Página de Apartamentos
 Página de Feedbacks
-Textfield com listagem de recurso, que armazena o id do recurso selecionado
 
 
 
@@ -30,11 +27,21 @@ Textfield com listagem de recurso, que armazena o id do recurso selecionado
 DOING:
 
 
-Página de Reservas
+
 
 
 OK:
 
+Não exibir os segundos nos campos de data e hora
+Edição - reservas
+Remoção - reservas
+Textfield com listagem de recurso, que armazena o id do recurso selecionado
+Cadastro - reservas
+Componente de seleção de data e hora
+Página de Reservas
+Fazer ordenação da lista funcionar com campos aninhados
+Fazer filtragem da lista funcionar com campos aninhados
+Organizar estrutura das pastas do projeto
 Remover botão de exportar do dropdown
 Edição - usuários
 Validação de telefone

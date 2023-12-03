@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { BASE_URL } from "../utils/constants";
+import { formatDocument } from "../utils/validators/validateDocument";
 
 export const dataProvider = {
   getList: (resource, params) => {
@@ -18,37 +19,96 @@ export const dataProvider = {
         .get(url, options)
         .then((res) => {
           let finalData = res.data;
-          if (params.sort && params.sort.field && params.sort.order) {
-            const sortedData = finalData.sort(function (a, b) {
-              const keyA = a[params.sort.field];
-              const keyB = b[params.sort.field];
+          try {
+            if (params.sort && params.sort.field && params.sort.order) {
+              finalData = finalData.sort((a, b) => {
+                const getField = (obj, field) => {
+                  const nestedFields = field.split(".");
+                  let nestedObject = obj;
 
-              if (params.sort.order == "ASC") {
-                if (keyA < keyB) return -1;
-                if (keyA > keyB) return 1;
-              } else if (params.sort.order == "DESC") {
-                if (keyA < keyB) return 1;
-                if (keyA > keyB) return -1;
-              }
-            });
-            finalData = sortedData;
-          }
+                  for (const nestedField of nestedFields) {
+                    if (
+                      nestedObject &&
+                      nestedObject.hasOwnProperty(nestedField)
+                    ) {
+                      nestedObject = nestedObject[nestedField];
+                    } else {
+                      return null; // Retorna null se algum nível do objeto for nulo ou undefined
+                    }
+                  }
 
-          if (params.filter && Object.keys(params.filter).length > 0) {
-            const filterField = Object.keys(params.filter)[
-              Object.keys(params.filter).length - 1
-            ];
-            const filterValue = params.filter[filterField];
+                  return nestedObject;
+                };
 
-            const filteredData = finalData.filter((item) => {
-              return item[filterField]
-                .toString()
-                .toLowerCase()
-                .includes(filterValue.toString().toLowerCase());
-            });
+                const fieldA = getField(a, params.sort.field);
+                const fieldB = getField(b, params.sort.field);
 
-            finalData = filteredData;
-          }
+                if (fieldA === null || fieldB === null) {
+                  // Lida com valores nulos, colocando-os no final ou no início, dependendo da ordem
+                  if (fieldA === null && fieldB === null) return 0;
+                  if (fieldA === null)
+                    return params.sort.order === "ASC" ? 1 : -1;
+                  if (fieldB === null)
+                    return params.sort.order === "ASC" ? -1 : 1;
+                }
+
+                if (params.sort.order === "ASC") {
+                  if (fieldA < fieldB) return -1;
+                  if (fieldA > fieldB) return 1;
+                } else if (params.sort.order === "DESC") {
+                  if (fieldA < fieldB) return 1;
+                  if (fieldA > fieldB) return -1;
+                }
+
+                return 0;
+              });
+            }
+          } catch {}
+
+          const removeAccents = (str) => {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          };
+
+          try {
+            if (params.filter && Object.keys(params.filter).length > 0) {
+              const filterField = Object.keys(params.filter)[
+                Object.keys(params.filter).length - 1
+              ];
+              const filterValue = params.filter[filterField];
+
+              finalData = finalData.filter((item) => {
+                // Verifica se o campo de filtro é um campo aninhado
+                if (typeof filterValue != "string") {
+                  const nestedField = Object.keys(filterValue)[0];
+                  const nestedValue = removeAccents(
+                    filterValue[nestedField].toString().toLowerCase()
+                  );
+
+                  if (
+                    item[filterField] !== null &&
+                    item[filterField][nestedField] !== undefined
+                  ) {
+                    return removeAccents(
+                      item[filterField][nestedField].toString().toLowerCase()
+                    ).includes(
+                      removeAccents(nestedValue.toString().toLowerCase())
+                    );
+                  }
+                  return false;
+                } else {
+                  // Se não for um campo aninhado, faz o filtro normalmente
+                  if (item[filterField] !== null) {
+                    return removeAccents(
+                      item[filterField].toString().toLowerCase()
+                    ).includes(
+                      removeAccents(filterValue.toString().toLowerCase())
+                    );
+                  }
+                }
+              });
+            }
+          } catch {}
+
           resolve({
             data: finalData,
             total: 1,
@@ -142,10 +202,11 @@ export const dataProvider = {
         const apartamento = res.data.find(
           (ap) => ap.numero.toLowerCase() === numero.toLowerCase()
         );
-        if (!apartamento) {
+        try {
+          resolve(apartamento.id);
+        } catch (e) {
           reject("Apartamento não encontrado");
         }
-        resolve(apartamento.id);
       });
     });
   },
@@ -159,105 +220,37 @@ export const dataProvider = {
     return new Promise((resolve, reject) => {
       axios.get(url, options).then((res) => {
         const apartamento = res.data.find((ap) => ap.id === id);
-        if (!apartamento) {
+
+        try {
+          resolve(apartamento.numero);
+        } catch (e) {
           reject("Apartamento não encontrado");
         }
-        resolve(apartamento.numero);
       });
     });
   },
-  getLenderConfig: (lenderId) => {
-    console.log(lenderId);
+  getIdPessoaByCpf: (cpf) => {
+    let url = `${BASE_URL}/Pessoas/GetAll`;
+    const formattedCpf = formatDocument(cpf);
     const options = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     };
     return new Promise((resolve, reject) => {
-      axios
-        .get(`${BASE_URL}/lenders/${lenderId}/config`, options)
-        .then((res) => {
-          resolve({ data: res.data });
-        })
-        .catch((e) => reject(e));
+      axios.get(url, options).then((res) => {
+        const pessoa = res.data.find(
+          (p) => p.cpf.toLowerCase() === formattedCpf.toLowerCase()
+        );
+        try {
+          resolve(pessoa.id);
+        } catch (e) {
+          reject("Pessoa não encontrada");
+        }
+      });
     });
   },
-  updateLenderConfig: (lenderId, data) => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    };
-    return new Promise((resolve, reject) => {
-      axios
-        .put(`${BASE_URL}/lenders/${lenderId}/config`, data, options)
-        .then((res) => {
-          resolve({ data: res.data });
-        })
-        .catch((e) => reject(e));
-    });
-  },
-  getLenderBankAccount: (lenderId) => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    };
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`${BASE_URL}/lender_bank_accounts?lender_id=${lenderId}`, options)
-        .then((res) => {
-          resolve({ data: res.data.entries });
-        })
-        .catch((e) => reject(e));
-    });
-  },
-  getLenderTaxes: (lenderId) => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    };
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`${BASE_URL}/lenders/${lenderId}/sponsor_taxes`, options)
-        .then((res) => {
-          resolve({ data: res.data.entries });
-        })
-        .catch((e) => reject(e));
-    });
-  },
-  getPartnerLenderList: (partnerId) => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    };
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`${BASE_URL}/partner_lenders?partner_id=${partnerId}`, options)
-        .then((res) => {
-          resolve({ data: res.data.entries });
-        })
-        .catch((e) => reject(e));
-    });
-  },
-  getAccountRegistrationData: (accountId) => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    };
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`${BASE_URL}/accounts/${accountId}/details`, options)
-        .then((res) => {
-          resolve({ data: res.data });
-        })
-        .catch((e) => reject(e));
-    });
-  },
-  // Expects resources in the format [["accounts", <account_id>], ["sponsor_settings"]]
+
   getResource: (resources) => {
     const path = resources.flat().join("/");
     return axios.get(`${BASE_URL}/${path}`, {
@@ -266,7 +259,7 @@ export const dataProvider = {
       },
     });
   },
-  // Expects resources in the format [["accounts", <account_id>], ["sponsor_settings"]]
+
   updateResource: (resources, updatedObj) => {
     const path = resources.flat().join("/");
     return axios.put(`${BASE_URL}/${path}`, updatedObj, {
@@ -317,42 +310,6 @@ export const dataProvider = {
     });
   },
 
-  advancementsAction: (type, advancementsIds) => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    };
-    return axios
-      .put(
-        `${BASE_URL}/advancements/approve?ids=${advancementsIds}${
-          type === "mark_as_sold" ? "&skip_processing=true" : ""
-        }`,
-        {},
-        options
-      )
-      .then((res) => ({ data: res.data }));
-  },
-  liquidateSoldPayable: (soldPayableId, data) => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    };
-    return new Promise((resolve, reject) => {
-      axios
-        .post(
-          `${BASE_URL}/sold_payables/${soldPayableId}/liquidate`,
-          data,
-          options
-        )
-        .then((res) => {
-          resolve({ data: res.data });
-        })
-        .catch((e) => reject(e));
-    });
-  },
-
   downloadAccountSpreadsheetModel: () => {
     const link = document.createElement("a");
     link.download = "Modelo de Cadastro de Médicos.xlsx";
@@ -389,46 +346,6 @@ export const dataProvider = {
       .then((res) => Promise.resolve({ data: res.data }));
   },
 
-  getInfoFromCNPJ: (cnpj) => {
-    const apiUrl = "https://publica.cnpj.ws/cnpj/";
-    return axios.get(`${apiUrl}${cnpj}`);
-  },
-
-  getPayableDocuments: (payableId, extension) => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-      responseType: "blob",
-    };
-
-    return axios
-      .get(`${BASE_URL}/payables/${payableId}/documents`, options)
-      .then((res) => {
-        const link = document.createElement("a");
-        link.href = window.URL.createObjectURL(new Blob([res.data]));
-        link.download = `${payableId}.${extension}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        return { data: res.data };
-      });
-  },
-
-  payableDocumentCancel: (payableId) => {
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    };
-
-    return axios
-      .post(`${BASE_URL}/payables/${payableId}/upload/cancel`, {}, options)
-      .then((res) => {
-        return { data: res.data };
-      });
-  },
-
   uploadPayableFile: (file, payableId) => {
     const options = {
       headers: {
@@ -444,34 +361,4 @@ export const dataProvider = {
       .post(`${BASE_URL}/payables/${payableId}/upload`, formData, options)
       .then((res) => Promise.resolve({ data: res.data }));
   },
-
-  exportAdvancements: (advancementIds) => {
-    if (!advancementIds.length) return;
-
-    const options = {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-      responseType: "blob",
-    };
-
-    return axios
-      .get(
-        `${BASE_URL}/advancements/export?ids=${advancementIds.join()}`,
-        options
-      )
-      .then((res) => {
-        const link = document.createElement("a");
-        link.href = window.URL.createObjectURL(new Blob([res.data]));
-        link.download = `Relatório-${new Date().toLocaleDateString(
-          "pt-BR"
-        )}.xlsx`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        return { data: res.data };
-      });
-  },
 };
-
-//export default dataProvider;

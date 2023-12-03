@@ -16,9 +16,9 @@ const CustomAppBar: FC<AppBarProps> = memo((props: AppBarProps) => {
     <StyledAppBar className="app-bar" color={color} elevation={0} {...rest}>
       <Toolbar disableGutters className="toolbar">
         <SidebarToggleButton className="menu-button" />
-        <div style={{ flex: 1, margin: "0 8px" }}>
-          <span className="font-semibold text-white text-lg font-serif">
-            CONDOMINUS - ADMINISTRAÇÃO
+        <div style={{ flex: 1, margin: "0 16px" }}>
+          <span className="font-medium text-white text-xl tracking-wide">
+            Painel Administrativo
           </span>
         </div>
         <div className="mr-2">

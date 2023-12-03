@@ -15,23 +15,25 @@ import {
 
 import { styled } from "@mui/material/styles";
 import {
-  Menu,
-  IconButton,
   Button,
   Dialog,
   DialogTitle,
   DialogActions,
   DialogContent,
   TextField as MUITextField,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  InputLabel,
+  FormControl,
+  FormHelperText,
 } from "@mui/material";
-import {
-  MoreHorizRounded,
-  LocalShipping,
-  AddRounded,
-  EditRounded,
-  TaskAlt,
-  CheckCircle,
-} from "@mui/icons-material";
+import { EditRounded, CalendarMonth, AddRounded } from "@mui/icons-material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs, { Dayjs } from "dayjs";
+import "dayjs/locale/pt-br";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../../utils/exporter";
@@ -42,23 +44,23 @@ import Alert from "../../components/Alert";
 const postFilters = [
   <SearchInput
     key="search"
-    source="destinatario"
-    placeholder="Buscar por destinatário"
+    source="pessoa.nome"
+    placeholder="Buscar por morador"
     alwaysOn
   />,
   <SearchInput
-    key="searchByApto"
-    source="numeroApartamento"
-    placeholder="Buscar por apartamento"
+    key="searchByArea"
+    source="areaComum.nome"
+    placeholder="Buscar por área comum"
     alwaysOn
   />,
 ];
 
-const DeliveryList = () => {
+const ReservationList = () => {
   return (
     <PrivatePage>
       <NavigationHeader
-        routePath={[{ icon: LocalShipping, title: "Entregas" }]}
+        routePath={[{ icon: CalendarMonth, title: "Reservas" }]}
       />
       <div
         style={{
@@ -68,20 +70,20 @@ const DeliveryList = () => {
           padding: "20px 32px",
         }}
       >
-        <span style={{ fontWeight: 700, fontSize: "26px" }}>Entregas</span>
+        <span style={{ fontWeight: 700, fontSize: "26px" }}>Reservas</span>
         <div className="bg-main mt-1" style={{ height: "3px" }} />
 
         <StyledList
           actions={
             <>
               <div className="flex flex-row items-center align-middle pt-2.5 pb-2.5">
-                <CreateDeliveryButton />
+                <CreateReservationButton />
                 <CustomExportButton />
               </div>
             </>
           }
           component="div"
-          resource={`Entregas/GetAll`}
+          resource={`Reservas/GetAll`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -114,180 +116,44 @@ const CustomDatagrid = () => {
     <Datagrid
       bulkActionButtons={
         <Fragment>
-          <MarkAsWithdrawButton />
           <EditButton />
           <RemoveButton />
         </Fragment>
       }
     >
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="destinatario" label="Destinatário" sortable={true} />
-      <TextField
-        source="numeroApartamento"
-        label="Apartamento"
-        sortable={false}
+      <TextField source="pessoa.nome" label="Morador" sortable={true} />
+      <DateField
+        //!source="dataInicio"
+        source="data"
+        label="Data Inicial"
+        showTime
+        locales="pt-BR"
+        options={{
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        }}
+        sortable={true}
       />
       <DateField
-        source="dataEntrega"
-        label="Data de Entrega"
+        source="dataFim"
+        label="Data Final"
         sortable={true}
         showTime
         locales="pt-BR"
+        options={{
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        }}
       />
-      <DateField
-        source="dataRetirada"
-        label="Data de Retirada"
-        sortable={true}
-        showTime
-        locales="pt-BR"
-      />
+      <TextField source="areaComum.nome" label="Área Comum" sortable={true} />
     </Datagrid>
-  );
-};
-
-const getApartamento = async (
-  numero: string,
-  setShowAlert: (
-    value: "confirmError" | "findApartamentoError" | undefined
-  ) => void,
-  setLoading: (value: boolean) => void
-) => {
-  let idApartamento = "";
-  try {
-    idApartamento = await dataProvider.getApartamentoIdByNumero(numero);
-  } catch (error) {
-    console.log(error);
-    setShowAlert("findApartamentoError");
-    setLoading(false);
-  }
-
-  if (!idApartamento) {
-    setShowAlert("findApartamentoError");
-    setLoading(false);
-  }
-
-  return idApartamento;
-};
-
-const MarkAsWithdrawButton = () => {
-  const listContext = useListContext();
-  const refresh = useRefresh();
-  const [open, setOpen] = React.useState(false);
-  const [showAlert, setShowAlert] = React.useState<
-    "confirmError" | "findApartamentoError" | undefined
-  >(undefined);
-
-  const [isLoading, setLoading] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const isNotWithdrawal = () => {
-    const entregas = listContext.data.filter((x) =>
-      listContext.selectedIds.includes(x.id)
-    );
-
-    const notWithdraw = entregas.every((x) => x.dataRetirada == null);
-
-    return notWithdraw;
-  };
-
-  const handleMarkAsWithdraw = async () => {
-    setLoading(true);
-
-    const dataUTC = new Date();
-
-    // Obter o deslocamento do fuso horário em minutos
-    const deslocamentoMinutos = dataUTC.getTimezoneOffset();
-
-    // Criar uma nova data ajustada para o fuso horário local
-    const dataHoraLocal = new Date(
-      dataUTC.getTime() - deslocamentoMinutos * 60000
-    );
-
-    try {
-      const updatePromises = listContext.selectedIds.map(async (id) => {
-        await dataProvider.update("Entregas", {
-          data: {
-            id,
-            dataRetirada: dataHoraLocal,
-          },
-        });
-      });
-      await Promise.all(updatePromises);
-
-      handleClose();
-      refresh();
-    } catch (error) {
-      console.log(error);
-      setShowAlert("confirmError");
-    }
-    setLoading(false);
-  };
-
-  return (
-    <>
-      <ReactAdminButton
-        size="small"
-        disabled={!isNotWithdrawal()}
-        onClick={handleClickOpen}
-      >
-        <>
-          <CheckCircle fontSize="small" className="mr-2" />
-          Marcar como retirada
-        </>
-      </ReactAdminButton>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title" className="flex !text-xl !mt-1">
-          {"Marcar como retirada"}
-        </DialogTitle>
-        <DialogContent className="!py-4 !mb-2">
-          <span className="text-center text-black/60">
-            {listContext.selectedIds.length > 1
-              ? "Tem certeza que deseja marcar essas entregas como retiradas?"
-              : "Tem certeza que deseja marcar essa entrega como retirada?"}
-          </span>
-        </DialogContent>
-        <DialogActions sx={{ marginRight: "12px", marginBottom: "8px" }}>
-          <Button
-            sx={{ marginBottom: "-4px !important", marginRight: "12px" }}
-            className="button"
-            onClick={handleClose}
-          >
-            Cancelar
-          </Button>
-          <Button
-            className="button"
-            variant="contained"
-            onClick={() => !isLoading && handleMarkAsWithdraw()}
-            autoFocus
-          >
-            {isLoading ? (
-              <div className="animate-spin rounded-full h-5 w-5 py-1 border-2 border-b-transparent border-white"></div>
-            ) : (
-              <span>Confirmar</span>
-            )}
-          </Button>
-        </DialogActions>
-        {showAlert && (
-          <BottomAlert
-            showAlert={showAlert}
-            setShowAlert={setShowAlert}
-            editar={true}
-          />
-        )}
-      </Dialog>
-    </>
   );
 };
 
@@ -296,47 +162,30 @@ const EditButton = () => {
   const refresh = useRefresh();
   const [open, setOpen] = React.useState(false);
 
-  const [destinatario, setDestinatario] = React.useState("");
-  const [nApartamento, setNApartamento] = React.useState("");
+  const [dataInicial, setDataInicial] = React.useState<Dayjs | null>(null);
+  const [dataFinal, setDataFinal] = React.useState<Dayjs | null>(null);
 
   const [isLoading, setLoading] = React.useState(false);
 
   const [requiredError, setRequiredError] = React.useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = React.useState<
-    Partial<Record<string, string>>
-  >({});
-  const getErrorMessage = (value: string | undefined, error?: string) =>
-    (!value && requiredError) || error;
+
   const [showAlert, setShowAlert] = React.useState<
-    "confirmError" | "findApartamentoError" | undefined
+    "confirmError" | "findMoradorError" | undefined
   >(undefined);
 
   useEffect(() => {
+    setShowAlert(undefined);
+
     async function fetchData() {
       setLoading(false);
 
-      const entrega = listContext.data.find(
+      const reserva = listContext.data.find(
         (x) => x.id === listContext.selectedIds[0]
       );
 
-      if (entrega !== undefined) {
-        setDestinatario(entrega.destinatario);
-
-        let nApartamento = "";
-        try {
-          nApartamento = await dataProvider.getNumeroApartamentoById(
-            entrega.idApartamento
-          );
-        } catch (error) {
-          console.log(error);
-          setShowAlert("findApartamentoError");
-          setLoading(false);
-        }
-        if (!nApartamento) {
-          setShowAlert("findApartamentoError");
-          setLoading(false);
-        }
-        setNApartamento(nApartamento);
+      if (reserva !== undefined) {
+        setDataInicial(dayjs(reserva.data)); //!
+        setDataFinal(dayjs(reserva.data)); //!
       }
     }
     fetchData();
@@ -350,46 +199,37 @@ const EditButton = () => {
     setOpen(false);
   };
 
-  const validateEdit = () => {
-    setValidationErrors({});
+  const ValidateEdit = () => {
     setRequiredError(null);
-
     const errors: Partial<Record<string, string>> = {};
 
-    if (!destinatario || !nApartamento) {
+    if (!dataInicial || !dataFinal) {
       setRequiredError("Este campo é obrigatório");
       return;
     }
 
     if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors);
       return;
     }
 
     return true;
   };
 
-  const handleEditEntrega = async () => {
+  const handleEditReserva = async () => {
     setLoading(true);
-    const isValid = validateEdit();
+    const isValid = ValidateEdit();
 
     if (!isValid) {
       setLoading(false);
       return;
     }
 
-    const idApartamento = await getApartamento(
-      nApartamento,
-      setShowAlert,
-      setLoading
-    );
-
     try {
-      await dataProvider.update("Entregas", {
+      await dataProvider.update("Reservas", {
         data: {
           id: listContext.selectedIds[0],
-          destinatario: destinatario,
-          idApartamento: idApartamento,
+          data: dataInicial,
+          //! dataFinal
         },
       });
       handleClose();
@@ -410,7 +250,7 @@ const EditButton = () => {
       >
         <>
           <EditRounded fontSize="small" className="mr-2" />
-          Editar entrega
+          Editar reserva
         </>
       </ReactAdminButton>
       <Dialog
@@ -423,33 +263,78 @@ const EditButton = () => {
           id="alert-dialog-title"
           className="flex justify-center !text-2xl !mt-3"
         >
-          {"EDITAR ENTREGA"}
+          {"EDITAR RESERVA"}
         </DialogTitle>
         <DialogContent className="!py-4 !mb-2 !w-[500px]">
-          <MUITextField
-            variant="outlined"
-            label="Destinatário"
-            value={destinatario}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setDestinatario(event.target.value);
-            }}
-            error={!destinatario && !!requiredError}
-            helperText={getErrorMessage(destinatario)}
-            required
-            className="w-full !mb-7"
-          />
-          <MUITextField
-            variant="outlined"
-            label="Apartamento"
-            value={nApartamento}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setNApartamento(event.target.value);
-            }}
-            error={!nApartamento && !!requiredError}
-            helperText={getErrorMessage(nApartamento)}
-            required
-            className="w-full"
-          />
+          <LocalizationProvider
+            adapterLocale="pt-br"
+            dateAdapter={AdapterDayjs}
+          >
+            <DateTimePicker
+              disablePast
+              ampm={false}
+              label="Data Inicial"
+              value={dataInicial}
+              format="DD/MM/YYYY HH:mm"
+              onChange={(newValue: Dayjs | null) => {
+                setDataInicial(newValue);
+              }}
+              slotProps={{
+                textField: {
+                  error: !dataInicial && !!requiredError,
+                  helperText: !dataInicial && requiredError,
+                },
+              }}
+              referenceDate={dataFinal || undefined}
+              minDate={dataFinal || undefined}
+              maxTime={
+                dataFinal ? dayjs(dataFinal).add(1, "minute") : undefined
+              }
+              maxDate={dataFinal || undefined}
+              className="w-full !mb-7"
+            />
+          </LocalizationProvider>
+
+          <LocalizationProvider
+            adapterLocale="pt-br"
+            dateAdapter={AdapterDayjs}
+          >
+            <DateTimePicker
+              disablePast
+              ampm={false}
+              label="Data Final"
+              value={dataFinal}
+              format="DD/MM/YYYY HH:mm"
+              onChange={(newValue: Dayjs | null) => {
+                setDataFinal(newValue);
+              }}
+              slotProps={{
+                textField: {
+                  error: !dataFinal && !!requiredError,
+                  helperText: !dataFinal && requiredError,
+                },
+              }}
+              referenceDate={dataInicial || undefined}
+              minDate={dataInicial || undefined}
+              minTime={
+                dataInicial ? dayjs(dataInicial).add(1, "minute") : undefined
+              }
+              maxDate={dataInicial || undefined}
+              className="w-full"
+            />
+          </LocalizationProvider>
+          <div className="mt-1 grid">
+            <Button
+              className="!justify-self-end"
+              variant="text"
+              onClick={() => {
+                setDataInicial(null);
+                setDataFinal(null);
+              }}
+            >
+              Limpar datas
+            </Button>
+          </div>
         </DialogContent>
         <DialogActions sx={{ marginRight: "12px", marginBottom: "8px" }}>
           <Button
@@ -462,7 +347,7 @@ const EditButton = () => {
           <Button
             className="button"
             variant="contained"
-            onClick={() => !isLoading && handleEditEntrega()}
+            onClick={() => !isLoading && handleEditReserva()}
             autoFocus
           >
             {isLoading ? (
@@ -492,19 +377,24 @@ const RemoveButton = () => {
       mutationMode="pessimistic"
       confirmContent={
         listContext.selectedIds.length > 1
-          ? "Tem certeza que deseja excluir as entregas selecionadas?"
-          : `Tem certeza que deseja excluir essa entrega?`
+          ? "Tem certeza que deseja excluir as reservas selecionadas?"
+          : `Tem certeza que deseja excluir essa reserva?`
       }
-      resource={"entrega"}
+      resource={"reserva"}
     />
   );
 };
 
-const CreateDeliveryButton = () => {
+const CreateReservationButton = () => {
   const refresh = useRefresh();
   const [open, setOpen] = React.useState(false);
-  const [destinatario, setDestinatario] = React.useState("");
-  const [nApartamento, setNApartamento] = React.useState("");
+
+  const [idAreaComum, setIdAreaComum] = React.useState<string | null>(null);
+  const [cpfMorador, setCpfMorador] = React.useState("");
+  const [dataInicial, setDataInicial] = React.useState<Dayjs | null>(null);
+  const [dataFinal, setDataFinal] = React.useState<Dayjs | null>(null);
+  const [areasComuns, setAreasComuns] = React.useState<any[]>([]);
+
   const [isLoading, setLoading] = React.useState(false);
 
   const [requiredError, setRequiredError] = React.useState<string | null>(null);
@@ -514,7 +404,7 @@ const CreateDeliveryButton = () => {
   const getErrorMessage = (value: string | undefined, error?: string) =>
     (!value && requiredError) || error;
   const [showAlert, setShowAlert] = React.useState<
-    "confirmError" | "findApartamentoError" | undefined
+    "confirmError" | "findMoradorError" | undefined
   >(undefined);
 
   const handleClickOpen = () => {
@@ -530,7 +420,7 @@ const CreateDeliveryButton = () => {
     setRequiredError(null);
     const errors: Partial<Record<string, string>> = {};
 
-    if (!destinatario || !nApartamento) {
+    if (!idAreaComum || !cpfMorador) {
       setRequiredError("Este campo é obrigatório");
       return;
     }
@@ -552,28 +442,30 @@ const CreateDeliveryButton = () => {
       return;
     }
 
-    const idApartamento = await getApartamento(
-      nApartamento,
-      setShowAlert,
-      setLoading
-    );
+    let idPessoa = "";
+    try {
+      idPessoa = await dataProvider.getIdPessoaByCpf(cpfMorador);
+    } catch (error) {
+      console.log(error);
+      setShowAlert("findMoradorError");
+      setLoading(false);
+      return;
+    }
 
-    const dataUTC = new Date();
-
-    // Obter o deslocamento do fuso horário em minutos
-    const deslocamentoMinutos = dataUTC.getTimezoneOffset();
-
-    // Criar uma nova data ajustada para o fuso horário local
-    const dataHoraLocal = new Date(
-      dataUTC.getTime() - deslocamentoMinutos * 60000
-    );
+    if (!idPessoa) {
+      setShowAlert("findMoradorError");
+      setLoading(false);
+      return;
+    }
 
     try {
-      await dataProvider.create("Entregas", {
+      await dataProvider.create("Reservas", {
         data: {
-          destinatario: destinatario,
-          dataEntrega: dataHoraLocal,
-          idApartamento: idApartamento,
+          idPessoa: idPessoa,
+          data: dataInicial,
+          //! dataInicial: dataInicial,
+          //! dataFinal: dataFinal,
+          idAreaComum: idAreaComum ? parseInt(idAreaComum, 10) : undefined,
         },
       });
       handleClose();
@@ -586,18 +478,28 @@ const CreateDeliveryButton = () => {
   };
 
   useEffect(() => {
-    setDestinatario("");
-    setNApartamento("");
+    setDataInicial(null);
+    setDataFinal(null);
+    setCpfMorador("");
+    setIdAreaComum(null);
     setValidationErrors({});
     setLoading(false);
     setRequiredError(null);
+    setShowAlert(undefined);
+
+    async function fetchData() {
+      const response = await dataProvider.getList("AreasComuns/GetAll");
+      setAreasComuns(response.data);
+      console.log(response.data);
+    }
+    fetchData();
   }, [open]);
 
   return (
     <>
       <Button onClick={handleClickOpen}>
         <AddRounded fontSize="small" />
-        <span className="ml-1.5 mt-[3px]">Nova entrega</span>
+        <span className="ml-1.5 mt-[3px]">Nova reserva</span>
       </Button>
       <Dialog
         open={open}
@@ -609,32 +511,118 @@ const CreateDeliveryButton = () => {
           id="alert-dialog-title"
           className="flex justify-center !text-2xl !mt-3 !text-neutral-800"
         >
-          {"CADASTRAR ENTREGA"}
+          {"CADASTRAR RESERVA"}
         </DialogTitle>
         <DialogContent className="!py-4 !mb-2 !w-[500px]">
+          <LocalizationProvider
+            adapterLocale="pt-br"
+            dateAdapter={AdapterDayjs}
+          >
+            <DateTimePicker
+              disablePast
+              ampm={false}
+              label="Data Inicial"
+              value={dataInicial}
+              format="DD/MM/YYYY HH:mm"
+              onChange={(newValue: Dayjs | null) => {
+                setDataInicial(newValue);
+              }}
+              slotProps={{
+                textField: {
+                  error: !dataInicial && !!requiredError,
+                  helperText: !dataInicial && requiredError,
+                },
+              }}
+              referenceDate={dataFinal || undefined}
+              minDate={dataFinal || undefined}
+              maxTime={
+                dataFinal ? dayjs(dataFinal).add(1, "minute") : undefined
+              }
+              maxDate={dataFinal || undefined}
+              className="w-full !mb-4"
+            />
+          </LocalizationProvider>
+          <LocalizationProvider
+            adapterLocale="pt-br"
+            dateAdapter={AdapterDayjs}
+          >
+            <DateTimePicker
+              disablePast
+              ampm={false}
+              label="Data Final"
+              value={dataFinal}
+              format="DD/MM/YYYY HH:mm"
+              onChange={(newValue: Dayjs | null) => {
+                setDataFinal(newValue);
+              }}
+              slotProps={{
+                textField: {
+                  error: !dataFinal && !!requiredError,
+                  helperText: !dataFinal && requiredError,
+                },
+              }}
+              referenceDate={dataInicial || undefined}
+              minDate={dataInicial || undefined}
+              minTime={
+                dataInicial ? dayjs(dataInicial).add(1, "minute") : undefined
+              }
+              maxDate={dataInicial || undefined}
+              className="w-full"
+            />
+          </LocalizationProvider>
+          <div className="mt-1 mb-7 grid">
+            <Button
+              className="!justify-self-end"
+              variant="text"
+              onClick={() => {
+                setDataInicial(null);
+                setDataFinal(null);
+              }}
+            >
+              Limpar datas
+            </Button>
+          </div>
+          <FormControl fullWidth>
+            <InputLabel
+              className={`${
+                !idAreaComum && !!requiredError ? "!text-red-600" : ""
+              }`}
+              id="demo-simple-select-label"
+            >
+              Área Comum *
+            </InputLabel>
+            <Select
+              label="Área Comum"
+              value={idAreaComum ? idAreaComum : ""}
+              onChange={(event: SelectChangeEvent) => {
+                setIdAreaComum(event.target.value as string);
+              }}
+              error={!idAreaComum && !!requiredError}
+              required
+              className="w-full"
+            >
+              <option aria-label="None" className="hidden" value="" />
+              {areasComuns.map((areaComum) => (
+                <MenuItem key={areaComum.id} value={String(areaComum.id)}>
+                  {areaComum.nome}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText className="!text-red-600">
+              {!idAreaComum && requiredError}
+            </FormHelperText>
+          </FormControl>
           <MUITextField
             variant="outlined"
-            label="Destinatário"
-            value={destinatario}
+            label="CPF do Morador"
+            value={cpfMorador}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setDestinatario(event.target.value);
+              setCpfMorador(event.target.value);
             }}
-            error={!destinatario && !!requiredError}
-            helperText={getErrorMessage(destinatario)}
+            error={!cpfMorador && !!requiredError}
+            helperText={getErrorMessage(cpfMorador)}
             required
-            className="w-full !mb-7"
-          />
-          <MUITextField
-            variant="outlined"
-            label="Apartamento"
-            value={nApartamento}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setNApartamento(event.target.value);
-            }}
-            error={!nApartamento && !!requiredError}
-            helperText={getErrorMessage(nApartamento)}
-            required
-            className="w-full"
+            className="w-full !mt-4 !mb-2"
           />
         </DialogContent>
         <DialogActions sx={{ marginRight: "12px", marginBottom: "8px" }}>
@@ -666,52 +654,10 @@ const CreateDeliveryButton = () => {
   );
 };
 
-const CustomDropdownMenu = () => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleExportClick = () => {
-    const resource = "Entregas/GetAll";
-    const sheetName = "Entregas";
-
-    CustomExporter(resource, sheetName);
-  };
-
-  return (
-    <>
-      <div className="ml-3">
-        <IconButton
-          onClick={handleClick}
-          sx={{ width: "32px", height: "32px", border: "1px solid gray" }}
-          size="small"
-        >
-          <MoreHorizRounded color="primary" />
-        </IconButton>
-      </div>
-      <StyledMenu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <ExportButton
-          sx={{ width: "100%", padding: "16px 14px" }}
-          onClick={handleClose}
-          label="Exportar Tabela"
-          exporter={handleExportClick}
-        />
-      </StyledMenu>
-    </>
-  );
-};
-
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "Entregas/GetAll";
-    const sheetName = "Entregas";
+    const resource = "Reservas/GetAll";
+    const sheetName = "Reservas";
 
     CustomExporter(resource, sheetName);
   };
@@ -724,12 +670,6 @@ const CustomExportButton = () => {
     />
   );
 };
-
-const StyledMenu = styled(Menu)({
-  "& .MuiList-root": {
-    padding: "0px",
-  },
-});
 
 const StyledList = styled(List)({
   "& .MuiToolbar-root:not(.RaBulkActionsToolbar-toolbar)": {
@@ -780,9 +720,9 @@ const BottomAlert = ({
   setShowAlert,
   editar,
 }: {
-  showAlert: "confirmError" | "findApartamentoError" | undefined;
+  showAlert: "confirmError" | "findMoradorError" | undefined;
   setShowAlert: (
-    value: "confirmError" | "findApartamentoError" | undefined
+    value: "confirmError" | "findMoradorError" | undefined
   ) => void;
   editar?: boolean;
 }) => (
@@ -801,13 +741,13 @@ const BottomAlert = ({
       text={
         showAlert === "confirmError"
           ? editar
-            ? "Ocorreu um erro ao editar a entrega. Por favor, tente novamente."
-            : "Ocorreu um erro ao criar a entrega. Por favor, tente novamente."
-          : "Cadastro do apartamento selecionado não encontrado."
+            ? "Ocorreu um erro ao editar a reserva. Por favor, tente novamente."
+            : "Ocorreu um erro ao criar a reserva. Por favor, tente novamente."
+          : "Não foi encontrado um morador com o CPF informado."
       }
       onClose={() => setShowAlert(undefined)}
     />
   </div>
 );
 
-export default DeliveryList;
+export default ReservationList;

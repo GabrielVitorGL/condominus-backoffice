@@ -133,6 +133,7 @@ const EditButton = () => {
   useEffect(() => {
     setLoading(false);
     setValidationErrors({});
+    setShowAlert(undefined);
 
     const usuario = listContext.data.find(
       (x) => x.id === listContext.selectedIds[0]

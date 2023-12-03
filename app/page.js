@@ -5,12 +5,14 @@ import { Routes, Route } from "react-router-dom";
 import AccountList from "./pages/moradores/MoradorList";
 import UserList from "./pages/usuarios/UsuarioList";
 import DeliveryList from "./pages/entregas/EntregaList";
+import ReservationList from "./pages/reservas/ReservaList";
 import authProvider from "./providers/authProvider";
 import { dataProvider } from "./providers/dataProvider";
 import polyglotI18nProvider from "ra-i18n-polyglot";
 import ptBr from "ra-language-pt-br";
 import MainLayout from "./layout/Layout";
 import Login from "./pages/login/page";
+import { ptBR } from "@mui/x-date-pickers";
 
 function AdminApp() {
   return (
@@ -25,7 +27,7 @@ function AdminApp() {
       <Resource name="/moradores" list={AccountList} show={ShowGuesser} />
       <Resource name="/usuarios" list={UserList} show={ShowGuesser} />
       <Resource name="/entregas" list={DeliveryList} show={ShowGuesser} />
-      <Resource name="/reservas" />
+      <Resource name="/reservas" list={ReservationList} show={ShowGuesser} />
       <Resource name="/areas" />
       <Resource name="/avisos" />
     </Admin>
@@ -89,6 +91,7 @@ const theme = {
       400: "#42A5F5",
     },
   },
+  ptBR,
 };
 
 const translations = { "pt-br": ptBr };

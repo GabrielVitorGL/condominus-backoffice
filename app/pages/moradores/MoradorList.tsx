@@ -146,6 +146,7 @@ const EditButton = () => {
   useEffect(() => {
     setLoading(false);
     setValidationErrors({});
+    setShowAlert(undefined);
 
     const morador = listContext.data.find(
       (x) => x.id === listContext.selectedIds[0]

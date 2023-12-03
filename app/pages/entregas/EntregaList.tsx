@@ -29,7 +29,6 @@ import {
   LocalShipping,
   AddRounded,
   EditRounded,
-  TaskAlt,
   CheckCircle,
 } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
@@ -133,6 +132,14 @@ const CustomDatagrid = () => {
         sortable={true}
         showTime
         locales="pt-BR"
+        options={{
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        }}
+
       />
       <DateField
         source="dataRetirada"
@@ -140,6 +147,13 @@ const CustomDatagrid = () => {
         sortable={true}
         showTime
         locales="pt-BR"
+        options={{
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        }}
       />
     </Datagrid>
   );
@@ -159,11 +173,13 @@ const getApartamento = async (
     console.log(error);
     setShowAlert("findApartamentoError");
     setLoading(false);
+    return;
   }
 
   if (!idApartamento) {
     setShowAlert("findApartamentoError");
     setLoading(false);
+    return;
   }
 
   return idApartamento;
@@ -312,6 +328,8 @@ const EditButton = () => {
   >(undefined);
 
   useEffect(() => {
+    setShowAlert(undefined);
+
     async function fetchData() {
       setLoading(false);
 
@@ -331,10 +349,12 @@ const EditButton = () => {
           console.log(error);
           setShowAlert("findApartamentoError");
           setLoading(false);
+          return;
         }
         if (!nApartamento) {
           setShowAlert("findApartamentoError");
           setLoading(false);
+          return;
         }
         setNApartamento(nApartamento);
       }
@@ -383,6 +403,11 @@ const EditButton = () => {
       setShowAlert,
       setLoading
     );
+
+    if (!idApartamento) {
+      setLoading(false);
+      return;
+    }
 
     try {
       await dataProvider.update("Entregas", {
@@ -558,6 +583,11 @@ const CreateDeliveryButton = () => {
       setLoading
     );
 
+    if (!idApartamento) {
+      setLoading(false);
+      return;
+    }
+
     const dataUTC = new Date();
 
     // Obter o deslocamento do fuso horário em minutos
@@ -586,6 +616,7 @@ const CreateDeliveryButton = () => {
   };
 
   useEffect(() => {
+    setShowAlert(undefined);
     setDestinatario("");
     setNApartamento("");
     setValidationErrors({});
@@ -799,11 +830,11 @@ const BottomAlert = ({
     <Alert
       type="error"
       text={
-        showAlert === "confirmError"
-          ? editar
-            ? "Ocorreu um erro ao editar a entrega. Por favor, tente novamente."
-            : "Ocorreu um erro ao criar a entrega. Por favor, tente novamente."
-          : "Cadastro do apartamento selecionado não encontrado."
+        showAlert === "findApartamentoError"
+          ? "Cadastro do apartamento selecionado não encontrado."
+          : editar
+          ? "Ocorreu um erro ao editar a entrega. Por favor, tente novamente."
+          : "Ocorreu um erro ao criar a entrega. Por favor, tente novamente."
       }
       onClose={() => setShowAlert(undefined)}
     />

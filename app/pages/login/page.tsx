@@ -3,7 +3,7 @@ import Image from "next/image";
 import TextField from "../../components/TextField";
 import Button from "../../components/Button";
 import { Person, Lock } from "@mui/icons-material/";
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
 import CondominusLogo from "../../assets/logo.png";
 import { useRouter } from "next/navigation";
 import authProvider from "../../providers/authProvider";
