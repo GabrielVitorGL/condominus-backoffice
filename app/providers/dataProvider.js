@@ -298,6 +298,8 @@ export const dataProvider = {
       formattedResource = "AreasComuns";
     } else if (resource == "apartamento" || resource == "apartamentos") {
       formattedResource = "Apartamentos";
+    } else if (resource == "acesso" || resource == "acessos") {
+      formattedResource = "Dependentes";
     }
 
     return new Promise((resolve, reject) => {

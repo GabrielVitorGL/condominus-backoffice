@@ -6,6 +6,7 @@ import AccountList from "./pages/moradores/MoradorList";
 import ApartmentList from "./pages/apartamentos/ApartamentoList";
 import UserList from "./pages/usuarios/UsuarioList";
 import DeliveryList from "./pages/entregas/EntregaList";
+import AccessList from "./pages/acessos/AcessoList";
 import ReservationList from "./pages/reservas/ReservaList";
 import CommonAreaList from "./pages/areas-comuns/AreaComumList";
 import AdviceList from "./pages/avisos/AvisoList";
@@ -32,6 +33,7 @@ function AdminApp() {
       <Resource name="/usuarios" list={UserList} show={ShowGuesser} />
       <Resource name="/apartamentos" list={ApartmentList} show={ShowGuesser} />
       <Resource name="/entregas" list={DeliveryList} show={ShowGuesser} />
+      <Resource name="/acesso" list={AccessList} show={ShowGuesser} />
       <Resource name="/reservas" list={ReservationList} show={ShowGuesser} />
       <Resource name="/areas" list={CommonAreaList} show={ShowGuesser} />
       <Resource name="/avisos" list={AdviceList} show={ShowGuesser} />

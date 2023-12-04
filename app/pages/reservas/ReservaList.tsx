@@ -43,15 +43,15 @@ import Alert from "../../components/Alert";
 
 const postFilters = [
   <SearchInput
-    key="search"
-    source="pessoa.nome"
-    placeholder="Buscar por morador"
-    alwaysOn
-  />,
-  <SearchInput
     key="searchByArea"
     source="areaComum.nome"
     placeholder="Buscar por área comum"
+    alwaysOn
+  />,
+  <SearchInput
+    key="search"
+    source="pessoa.nome"
+    placeholder="Buscar por morador"
     alwaysOn
   />,
 ];
@@ -122,7 +122,7 @@ const CustomDatagrid = () => {
       }
     >
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="pessoa.nome" label="Morador" sortable={true} />
+      <TextField source="areaComum.nome" label="Área Comum" sortable={true} />
       <DateField
         //!source="dataInicio"
         source="data"
@@ -152,7 +152,7 @@ const CustomDatagrid = () => {
           minute: "numeric",
         }}
       />
-      <TextField source="areaComum.nome" label="Área Comum" sortable={true} />
+      <TextField source="pessoa.nome" label="Morador" sortable={true} />
     </Datagrid>
   );
 };
@@ -273,7 +273,7 @@ const EditButton = () => {
             <DateTimePicker
               disablePast
               ampm={false}
-              label="Data Inicial"
+              label="Data Inicial *"
               value={dataInicial}
               format="DD/MM/YYYY HH:mm"
               onChange={(newValue: Dayjs | null) => {
@@ -302,7 +302,7 @@ const EditButton = () => {
             <DateTimePicker
               disablePast
               ampm={false}
-              label="Data Final"
+              label="Data Final *"
               value={dataFinal}
               format="DD/MM/YYYY HH:mm"
               onChange={(newValue: Dayjs | null) => {

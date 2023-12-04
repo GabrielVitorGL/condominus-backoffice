@@ -7,8 +7,8 @@ No login checar se tipo pessoa é sindico ou porteiro, e guardar no localStorage
 Usuário porteiro visualizar apenas página de entregas e acesso se houver
 Importar moradores por planilha
 Criação e download de planilha modelo
-Remoção - acesso
-Página de Acesso
+
+
 
 
 DOING:
@@ -18,6 +18,11 @@ DOING:
 
 OK:
 
+Colocar required em todas as edições
+Inverter área comum e morador na listagem de reservas
+Edição - acesso
+Remoção - acesso
+Página de Acesso
 Edição - apartamento
 Remoção - apartamento
 Cadastro - apartamento

@@ -22,10 +22,7 @@ import {
   DialogContent,
   TextField as MUITextField,
 } from "@mui/material";
-import {
-  AccountBox,
-  EditRounded,
-} from "@mui/icons-material";
+import { AccountBox, EditRounded } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../../utils/exporter";
@@ -251,6 +248,7 @@ const EditButton = () => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setNome(event.target.value);
             }}
+            required
             className="w-full !mb-7"
           />
           <MUITextField
@@ -260,9 +258,10 @@ const EditButton = () => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setEmail(event.target.value);
             }}
+            required
             error={(!email && !!requiredError) || !!validationErrors.email}
             helperText={getErrorMessage(email, validationErrors.email)}
-            className="w-full !mb-7"
+            className="w-full"
           />
         </DialogContent>
         <DialogActions sx={{ marginRight: "12px", marginBottom: "8px" }}>

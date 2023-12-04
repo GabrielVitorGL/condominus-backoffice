@@ -322,6 +322,7 @@ const EditButton = () => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setApartamento(event.target.value);
             }}
+            required
             //! checar se vai validar aqui
             className="w-full"
           />
