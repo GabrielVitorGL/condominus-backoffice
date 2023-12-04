@@ -18,6 +18,7 @@ import { useSidebarState } from "./Sidebar";
 import { ListItemIcon, Tooltip } from "@mui/material";
 import { Link } from "react-admin";
 import { useRouter } from "next/navigation";
+import { AccountBox, Apartment, Feedback } from "@mui/icons-material";
 
 interface CustomMenuItemProps extends MenuItemProps {
   route: string;
@@ -102,10 +103,11 @@ const CustomMenu = () => {
         title="Moradores"
         icon={<PersonIcon />}
       />
+      <CustomMenuItem route="usuarios" title="Usuários" icon={<AccountBox />} />
       <CustomMenuItem
-        route="usuarios"
-        title="Usuários"
-        icon={<AccountBoxOutlinedIcon />}
+        route="apartamentos"
+        title="Apartamentos"
+        icon={<Apartment />}
       />
       <CustomMenuItem
         route="entregas"
@@ -123,6 +125,7 @@ const CustomMenu = () => {
         icon={<CelebrationIcon />}
       />
       <CustomMenuItem route="avisos" title="Avisos" icon={<CampaignIcon />} />
+      <CustomMenuItem route="feedbacks" title="Feedbacks" icon={<Feedback />} />
       <EmptySpace />
       <CustomMenuItem
         route="logout"

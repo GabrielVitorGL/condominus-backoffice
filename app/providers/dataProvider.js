@@ -293,6 +293,11 @@ export const dataProvider = {
       formattedResource = "Avisos";
     } else if (resource == "área comum" || resource == "áreas comuns") {
       formattedResource = "AreasComuns";
+    } else if (resource == "feedback" || resource == "feedbacks") {
+      //! formattedResource = "Feedbacks";
+      formattedResource = "AreasComuns";
+    } else if (resource == "apartamento" || resource == "apartamentos") {
+      formattedResource = "Apartamentos";
     }
 
     return new Promise((resolve, reject) => {
@@ -313,6 +318,16 @@ export const dataProvider = {
                 "Você não pode excluir essa área pois existem reservas cadastradas para ela."
               );
             }
+            if (formattedResource == "Pessoas") {
+              reject(
+                "Você não pode excluir esse morador pois ele possui um usuário cadastrado."
+              );
+            }
+            if (formattedResource == "Apartamentos") {
+              reject(
+                "Você não pode excluir esse apartamento pois ele possui moradores cadastrados."
+              );
+            }
           }
           reject(e);
         });
@@ -321,7 +336,7 @@ export const dataProvider = {
 
   downloadAccountSpreadsheetModel: () => {
     const link = document.createElement("a");
-    link.download = "Modelo de Cadastro de Médicos.xlsx";
+    link.download = "Modelo Moradores.xlsx";
     link.href = process.env.REACT_APP_ACCOUNT_SPREADSHEET_MODEL_URL || "";
     document.body.appendChild(link);
     link.click();
@@ -340,15 +355,6 @@ export const dataProvider = {
     formData.append("sheet", file);
     formData.append("reg_type", "simple");
     formData.append("account_type", accountType);
-
-    // TODO: add a way to select the partner. Currently it's hardcoded to
-    // be Peerbnk on HML and MVBnk on production
-    formData.append(
-      "partner_id",
-      process.env.REACT_APP_ENVIRONMENT === "production"
-        ? "42b9f8b4-0749-49e8-9430-560ed128794b"
-        : "ea405542-3fb2-4b63-a482-516204791b39"
-    );
 
     return axios
       .post(`${BASE_URL}/accounts/spreadsheet`, formData, options)

@@ -1,21 +1,14 @@
 TO DO:
 
+Conferir //! e //TODO e console.log
 Usar API do sommee
+No login guardar id da pessoa no localStorage
+No login checar se tipo pessoa é sindico ou porteiro, e guardar no localStorage
 Usuário porteiro visualizar apenas página de entregas e acesso se houver
 Importar moradores por planilha
 Criação e download de planilha modelo
-Cadastro e edição de pessoa receber apartamento (na api ainda não recebe esse campo. Buscar de forma similar a que acontece no cadastro de entregas)
-Remoção - apartamento
 Remoção - acesso
-Cadastro - apartamento
-Edição - apartamento
-Adicionar botão de cadastrar morador
-Página de Apartamentos
-Página de Feedbacks
 Página de Acesso
-No login guardar id da pessoa no localStorage
-No login checar se tipo pessoa é sindico ou porteiro, e guardar no localStorage
-
 
 
 DOING:
@@ -25,6 +18,16 @@ DOING:
 
 OK:
 
+Edição - apartamento
+Remoção - apartamento
+Cadastro - apartamento
+Página de Apartamentos
+Página de Feedbacks
+Adicionar botão de cadastrar morador
+Cadastro e edição de pessoa receber apartamento (na api ainda não recebe esse campo. Buscar de forma similar a que acontece no cadastro de entregas)
+Adicionar apartamento na listagem de moradores
+Adicionar dropdown nos botões da lista de moradores
+Permitir buscar morador por CPF e apartamento
 Adicionar data de acesso em usuários
 TextField de mensagem ser multiline
 Remoção - avisos

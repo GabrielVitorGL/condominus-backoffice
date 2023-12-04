@@ -3,11 +3,13 @@ import React from "react";
 import { Admin, Resource, ListGuesser, ShowGuesser } from "react-admin";
 import { Routes, Route } from "react-router-dom";
 import AccountList from "./pages/moradores/MoradorList";
+import ApartmentList from "./pages/apartamentos/ApartamentoList";
 import UserList from "./pages/usuarios/UsuarioList";
 import DeliveryList from "./pages/entregas/EntregaList";
 import ReservationList from "./pages/reservas/ReservaList";
 import CommonAreaList from "./pages/areas-comuns/AreaComumList";
 import AdviceList from "./pages/avisos/AvisoList";
+import FeedbackList from "./pages/feedbacks/FeedbackList";
 import authProvider from "./providers/authProvider";
 import { dataProvider } from "./providers/dataProvider";
 import polyglotI18nProvider from "ra-i18n-polyglot";
@@ -28,10 +30,12 @@ function AdminApp() {
     >
       <Resource name="/moradores" list={AccountList} show={ShowGuesser} />
       <Resource name="/usuarios" list={UserList} show={ShowGuesser} />
+      <Resource name="/apartamentos" list={ApartmentList} show={ShowGuesser} />
       <Resource name="/entregas" list={DeliveryList} show={ShowGuesser} />
       <Resource name="/reservas" list={ReservationList} show={ShowGuesser} />
       <Resource name="/areas" list={CommonAreaList} show={ShowGuesser} />
       <Resource name="/avisos" list={AdviceList} show={ShowGuesser} />
+      <Resource name="/feedbacks" list={FeedbackList} show={ShowGuesser} />
     </Admin>
   );
 }

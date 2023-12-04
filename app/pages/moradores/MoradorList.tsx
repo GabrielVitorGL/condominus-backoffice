@@ -21,8 +21,15 @@ import {
   DialogActions,
   DialogContent,
   TextField as MUITextField,
+  IconButton,
+  Menu,
 } from "@mui/material";
-import { Person, EditRounded } from "@mui/icons-material";
+import {
+  Person,
+  EditRounded,
+  MoreHorizRounded,
+  AddRounded,
+} from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../../utils/exporter";
@@ -33,13 +40,30 @@ import {
   formatPhoneNumber,
   validatePhoneNumber,
 } from "../../utils/validators/validatePhoneNumber";
-import { formatDocument, validateDocument } from "../../utils/validators/validateDocument";
+import {
+  formatDocument,
+  validateDocument,
+} from "../../utils/validators/validateDocument";
 
 const postFilters = [
   <SearchInput
     key="search"
     source="nome"
     placeholder="Buscar por nome"
+    className="w-48"
+    alwaysOn
+  />,
+  <SearchInput
+    key="searchByCpf"
+    source="cpf"
+    placeholder="Buscar por CPF"
+    className="w-48"
+    alwaysOn
+  />,
+  <SearchInput
+    key="searchByApto"
+    source="apartamento.numero"
+    placeholder="Buscar por apartamento"
     alwaysOn
   />,
 ];
@@ -62,8 +86,9 @@ const AccountList = () => {
         <StyledList
           actions={
             <>
-              <div className="flex flex-row items-center align-middle pt-3 pb-3">
-                <CustomExportButton />
+              <div className="flex flex-row items-center align-middle pt-2.5 pb-2.5">
+                <CreateAccountButton />
+                <CustomDropdownMenu />
               </div>
             </>
           }
@@ -110,12 +135,10 @@ const CustomDatagrid = () => {
       <TextField source="nome" label="Nome" sortable={true} />
       <TextField source="telefone" label="Telefone" sortable={false} />
       <TextField source="cpf" label="CPF" sortable={false} />
-      <FunctionField
-        label="Dependentes"
-        render={(record: any) => {
-          if (record.dependentes == null) return 0;
-          return record.dependentes.length();
-        }}
+      <TextField
+        source="apartamento.numero"
+        label="Apartamento"
+        sortable={true}
       />
     </Datagrid>
   );
@@ -365,6 +388,234 @@ const RemoveButton = () => {
   );
 };
 
+const getApartamento = async (
+  numero: string,
+  setShowAlert: (
+    value: "confirmError" | "findApartamentoError" | undefined
+  ) => void,
+  setLoading: (value: boolean) => void
+) => {
+  let idApartamento = "";
+  try {
+    idApartamento = await dataProvider.getApartamentoIdByNumero(numero);
+  } catch (error) {
+    console.log(error);
+    setShowAlert("findApartamentoError");
+    setLoading(false);
+    return;
+  }
+
+  if (!idApartamento) {
+    setShowAlert("findApartamentoError");
+    setLoading(false);
+    return;
+  }
+
+  return idApartamento;
+};
+
+const CreateAccountButton = () => {
+  const refresh = useRefresh();
+  const [open, setOpen] = React.useState(false);
+  const [nome, setNome] = React.useState("");
+  const [cpf, setCpf] = React.useState("");
+  const [telefone, setTelefone] = React.useState("");
+  const [apartamento, setApartamento] = React.useState("");
+  const [isLoading, setLoading] = React.useState(false);
+
+  const [requiredError, setRequiredError] = React.useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = React.useState<
+    Partial<Record<string, string>>
+  >({});
+  const getErrorMessage = (value: string | undefined, error?: string) =>
+    (!value && requiredError) || error;
+  const [showAlert, setShowAlert] = React.useState<
+    "confirmError" | "findApartamentoError" | undefined
+  >(undefined);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const validateCreate = () => {
+    setValidationErrors({});
+    setRequiredError(null);
+    const errors: Partial<Record<string, string>> = {};
+
+    if (!nome || !cpf || !telefone || !apartamento) {
+      setRequiredError("Este campo é obrigatório");
+      return;
+    }
+
+    if (validatePhoneNumber(formatPhoneNumber(telefone || "")) === false) {
+      errors.telefone = "Telefone inválido";
+    }
+
+    if (validateDocument(formatDocument(cpf || "")) === false) {
+      errors.cpf = "CPF inválido";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    return true;
+  };
+
+  const handleCreateMorador = async () => {
+    setLoading(true);
+    const isValid = validateCreate();
+
+    if (!isValid) {
+      setLoading(false);
+      return;
+    }
+
+    const idApartamento = await getApartamento(
+      apartamento,
+      setShowAlert,
+      setLoading
+    );
+
+    if (!idApartamento) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await dataProvider.create("Pessoas", {
+        data: {
+          nome: nome,
+          cpf: formatDocument(cpf || ""),
+          telefone: formatPhoneNumber(telefone || ""),
+          apartamento: apartamento, //!
+          perfil: "Morador",
+        },
+      });
+      handleClose();
+      refresh();
+    } catch (error) {
+      console.log(error);
+      setShowAlert("confirmError");
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    setShowAlert(undefined);
+    setNome("");
+    setCpf("");
+    setTelefone("");
+    setApartamento("");
+    setValidationErrors({});
+    setLoading(false);
+    setRequiredError(null);
+  }, [open]);
+
+  return (
+    <>
+      <Button onClick={handleClickOpen}>
+        <AddRounded fontSize="small" />
+        <span className="ml-1.5 mt-[3px]">Novo morador</span>
+      </Button>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          className="flex justify-center !text-2xl !mt-3 !text-neutral-800"
+        >
+          {"CADASTRAR MORADOR"}
+        </DialogTitle>
+        <DialogContent className="!py-4 !mb-2 !w-[500px]">
+          <MUITextField
+            variant="outlined"
+            label="Nome"
+            value={nome}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setNome(event.target.value);
+            }}
+            error={!nome && !!requiredError}
+            helperText={getErrorMessage(nome)}
+            required
+            className="w-full !mb-7"
+          />
+          <MUITextField
+            variant="outlined"
+            label="CPF"
+            value={cpf}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setCpf(event.target.value);
+            }}
+            error={(!cpf && !!requiredError) || !!validationErrors.cpf}
+            helperText={getErrorMessage(cpf, validationErrors.cpf)}
+            required
+            className="w-full !mb-7"
+          />
+          <MUITextField
+            variant="outlined"
+            label="Telefone"
+            value={telefone}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setTelefone(event.target.value);
+            }}
+            error={
+              (!telefone && !!requiredError) || !!validationErrors.telefone
+            }
+            helperText={getErrorMessage(telefone, validationErrors.telefone)}
+            required
+            className="w-full !mb-7"
+          />
+          <MUITextField
+            variant="outlined"
+            label="Apartamento"
+            value={apartamento}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setApartamento(event.target.value);
+            }}
+            error={!apartamento && !!requiredError}
+            helperText={getErrorMessage(apartamento)}
+            required
+            className="w-full"
+          />
+        </DialogContent>
+        <DialogActions sx={{ marginRight: "12px", marginBottom: "8px" }}>
+          <Button
+            sx={{ marginBottom: "-4px !important", marginRight: "12px" }}
+            className="button"
+            onClick={handleClose}
+          >
+            Cancelar
+          </Button>
+          <Button
+            className="button"
+            variant="contained"
+            onClick={() => !isLoading && handleCreateMorador()}
+            autoFocus
+          >
+            {isLoading ? (
+              <div className="animate-spin rounded-full h-5 w-5 py-1 border-2 border-b-transparent border-white"></div>
+            ) : (
+              <span>Criar</span>
+            )}
+          </Button>
+        </DialogActions>
+        {showAlert && (
+          <BottomAlert showAlert={showAlert} setShowAlert={setShowAlert} />
+        )}
+      </Dialog>
+    </>
+  );
+};
+
 const CustomExportButton = () => {
   const handleExportClick = () => {
     const resource = "Pessoas/GetMoradores";
@@ -416,6 +667,54 @@ const BottomAlert = ({
     />
   </div>
 );
+
+const CustomDropdownMenu = () => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleExportClick = () => {
+    const resource = "Pessoas/GetMoradores";
+    const sheetName = "Moradores";
+
+    CustomExporter(resource, sheetName);
+  };
+
+  return (
+    <>
+      <div className="ml-3">
+        <IconButton
+          onClick={handleClick}
+          sx={{ width: "32px", height: "32px", border: "1px solid gray" }}
+          size="small"
+        >
+          <MoreHorizRounded color="primary" />
+        </IconButton>
+      </div>
+      <StyledMenu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <ExportButton
+          sx={{ width: "100%", padding: "16px 14px" }}
+          onClick={handleClose}
+          label="Exportar Tabela"
+          exporter={handleExportClick}
+        />
+      </StyledMenu>
+    </>
+  );
+};
+
+const StyledMenu = styled(Menu)({
+  "& .MuiList-root": {
+    padding: "0px",
+  },
+});
 
 const StyledList = styled(List)({
   "& .MuiToolbar-root:not(.RaBulkActionsToolbar-toolbar)": {
