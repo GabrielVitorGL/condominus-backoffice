@@ -8,7 +8,6 @@ import basicStyled from "@emotion/styled";
 
 import LogoutIcon from "@mui/icons-material/LogoutRounded";
 import PersonIcon from "@mui/icons-material/Person";
-import AccountBoxOutlinedIcon from "@mui/icons-material/AccountBoxOutlined";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CelebrationIcon from "@mui/icons-material/Celebration";

@@ -24,7 +24,6 @@ import {
 } from "@mui/material";
 import {
   AccountBox,
-  AccountBoxOutlined,
   EditRounded,
 } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";

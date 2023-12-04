@@ -25,7 +25,6 @@ import {
 import {
   AddRounded,
   EditRounded,
-  Celebration,
   Campaign,
 } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";

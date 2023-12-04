@@ -10,7 +10,6 @@ import {
   useListContext,
   SearchInput,
   useRefresh,
-  DateField,
 } from "react-admin";
 
 import { styled } from "@mui/material/styles";
@@ -22,18 +21,12 @@ import {
   DialogContent,
   TextField as MUITextField,
 } from "@mui/material";
-import {
-  AccountBoxOutlined,
-  AddRounded,
-  Apartment,
-  EditRounded,
-} from "@mui/icons-material";
+import { AddRounded, Apartment, EditRounded } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../../utils/exporter";
 import { SHOW_LOADING } from "../../utils/constants";
 import Alert from "../../components/Alert";
-import validateEmail from "../../utils/validators/validateEmail";
 import { dataProvider } from "../../providers/dataProvider";
 import {
   formatPhoneNumber,
@@ -75,7 +68,7 @@ const ApartmentList = () => {
         <StyledList
           actions={
             <>
-              <div className="flex flex-row items-center align-middle pt-3 pb-3">
+              <div className="flex flex-row items-center align-middle pt-2.5 pb-2.5">
                 <CreateApartmentButton />
                 <CustomExportButton />
               </div>

@@ -1,33 +1,21 @@
 "use client";
-import React, { Fragment, useEffect } from "react";
+import React from "react";
 import {
   TextField,
   Datagrid,
   List,
   ExportButton,
-  BulkDeleteWithConfirmButton,
-  Button as ReactAdminButton,
   useListContext,
   SearchInput,
-  useRefresh,
   DateField,
 } from "react-admin";
 
 import { styled } from "@mui/material/styles";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  TextField as MUITextField,
-} from "@mui/material";
-import { AddRounded, EditRounded, Feedback } from "@mui/icons-material";
+import { Feedback } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../../utils/exporter";
 import { SHOW_LOADING } from "../../utils/constants";
-import { dataProvider } from "../../providers/dataProvider";
 import Alert from "../../components/Alert";
 
 const postFilters = [
