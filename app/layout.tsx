@@ -5,11 +5,6 @@ import type { Metadata } from "next";
 import NoSsrWrapper from "./utils/NoSsrWrapper";
 import { BrowserRouter as Router } from "react-router-dom";
 
-export const metadata: Metadata = {
-  title: "Condominus Backoffice",
-  description: "Gerencie seu condomínio",
-};
-
 export default function RootLayout({
   children,
 }: {
