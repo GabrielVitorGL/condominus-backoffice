@@ -1,7 +1,5 @@
 TO DO:
 
-Conferir //! e //TODO e console.log
-Usar API do sommee
 Importar moradores por planilha
 Criação e download de planilha modelo
 
@@ -14,8 +12,12 @@ DOING:
 
 OK:
 
+Buildar e rodar o projeto localmente
+Exibir número do apartamento na lista de visitantes
+Exibir se morador tem um usuário cadastrado
+Mudar acesso para visitantes
+Conferir //! e //TODO e console.log
 Migrar para nova api
-No login guardar id da pessoa no localStorage
 Usuário porteiro visualizar apenas página de entregas e acesso se houver
 No login checar se tipo pessoa é sindico ou porteiro, e guardar no localStorage
 Colocar required em todas as edições
@@ -88,8 +90,8 @@ Exportar em Excel ao invés de CSV
 Mudar nome da planilha ao exportar
 Alterar cor do botão de cadastrar morador para a mais escura
 Exibir erro no login
-
-
+Usar API do sommee
+No login guardar id da pessoa no localStorage
 
 
 
