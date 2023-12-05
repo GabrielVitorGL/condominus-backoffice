@@ -44,13 +44,13 @@ import Alert from "../../components/Alert";
 const postFilters = [
   <SearchInput
     key="searchByArea"
-    source="areaComum.nome"
+    source="nomeAreaPessAreaDTO"
     placeholder="Buscar por área comum"
     alwaysOn
   />,
   <SearchInput
     key="search"
-    source="pessoa.nome"
+    source="nomePessoaDTO"
     placeholder="Buscar por morador"
     alwaysOn
   />,
@@ -83,7 +83,7 @@ const ReservationList = () => {
             </>
           }
           component="div"
-          resource={`Reservas/GetAll`}
+          resource={`PessoasAreasComuns/GetAllCondominio`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -122,10 +122,14 @@ const CustomDatagrid = () => {
       }
     >
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="areaComum.nome" label="Área Comum" sortable={true} />
+      <TextField
+        source="nomeAreaPessAreaDTO"
+        label="Área Comum"
+        sortable={true}
+      />
       <DateField
         //!source="dataInicio"
-        source="data"
+        source="dataHoraInicioPessAreaDTO"
         label="Data Inicial"
         showTime
         locales="pt-BR"
@@ -139,7 +143,7 @@ const CustomDatagrid = () => {
         sortable={true}
       />
       <DateField
-        source="dataFim"
+        source="dataHoraFimPessAreaDTO"
         label="Data Final"
         sortable={true}
         showTime
@@ -152,7 +156,7 @@ const CustomDatagrid = () => {
           minute: "numeric",
         }}
       />
-      <TextField source="pessoa.nome" label="Morador" sortable={true} />
+      <TextField source="nomePessoaDTO" label="Morador" sortable={true} />
     </Datagrid>
   );
 };
@@ -488,7 +492,9 @@ const CreateReservationButton = () => {
     setShowAlert(undefined);
 
     async function fetchData() {
-      const response = await dataProvider.getList("AreasComuns/GetAll");
+      const response = await dataProvider.getList(
+        "PessoasAreasComuns/GetAllCondominio"
+      );
       setAreasComuns(response.data);
       console.log(response.data);
     }
@@ -656,7 +662,7 @@ const CreateReservationButton = () => {
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "Reservas/GetAll";
+    const resource = "PessoasAreasComuns/GetAllCondominio";
     const sheetName = "Reservas";
 
     CustomExporter(resource, sheetName);

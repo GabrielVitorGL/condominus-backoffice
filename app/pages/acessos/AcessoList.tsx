@@ -36,15 +36,24 @@ import {
 const postFilters = [
   <SearchInput
     key="search"
-    source="nome"
+    source="nomeDependenteDTO"
     placeholder="Buscar por nome"
     alwaysOn
+    className="w-48"
   />,
   <SearchInput
-    key="searchByPhoneNumber"
-    source="pessoa.nome"
+    key="searchByCpf"
+    source="cpfDependenteDTO"
+    placeholder="Buscar por CPF"
+    alwaysOn
+    className="w-48"
+  />,
+  <SearchInput
+    key="searchByMorador"
+    source="nomePessoaDependenteDTO"
     placeholder="Buscar por morador"
     alwaysOn
+    className="w-60"
   />,
 ];
 
@@ -72,7 +81,7 @@ const AccessList = () => {
             </>
           }
           component="div"
-          resource={`Dependentes/GetAll`} //!
+          resource={`Dependentes/GetAllCondominio`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -111,10 +120,10 @@ const CustomDatagrid = () => {
       }
     >
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="nome" label="Nome" sortable={true} />
-      <TextField source="telefone" label="Telefone" sortable={false} />
+      <TextField source="nomeDependenteDTO" label="Nome" sortable={true} />
+      <TextField source="cpfDependenteDTO" label="CPF" sortable={false} />
       <TextField
-        source="pessoa.nome"
+        source="nomePessoaDependenteDTO"
         label="Morador responsável"
         sortable={true}
       />
@@ -342,7 +351,7 @@ const RemoveButton = () => {
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "Dependentes/GetAll"; //!
+    const resource = "Dependentes/GetAllCondominio";
     const sheetName = "Acessos";
 
     CustomExporter(resource, sheetName);

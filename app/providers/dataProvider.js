@@ -191,7 +191,7 @@ export const dataProvider = {
     });
   },
   getApartamentoIdByNumero: (numero) => {
-    let url = `${BASE_URL}/Apartamentos/GetAll`;
+    let url = `${BASE_URL}/Apartamentos/GetAllCondominio`;
     const options = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -200,7 +200,7 @@ export const dataProvider = {
     return new Promise((resolve, reject) => {
       axios.get(url, options).then((res) => {
         const apartamento = res.data.find(
-          (ap) => ap.numero.toLowerCase() === numero.toLowerCase()
+          (ap) => ap.numeroApartamentoDTO.toLowerCase() === numero.toLowerCase()
         );
         try {
           resolve(apartamento.id);

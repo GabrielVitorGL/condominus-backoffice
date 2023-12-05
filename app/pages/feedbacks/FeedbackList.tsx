@@ -21,7 +21,7 @@ import Alert from "../../components/Alert";
 const postFilters = [
   <SearchInput
     key="search"
-    source="assunto"
+    source="assuntoNotificacaoDTO"
     placeholder="Buscar por assunto"
     alwaysOn
   />,
@@ -51,7 +51,7 @@ const FeedbackList = () => {
             </>
           }
           component="div"
-          resource={`Avisos/GetAll`} //! alterar aqui
+          resource={`Notificacoes/GetFeedCondominio`} //! alterar aqui
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -83,10 +83,18 @@ const CustomDatagrid = () => {
   return (
     <Datagrid bulkActionButtons={false}>
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="assunto" label="Assunto" sortable={true} />
-      <TextField source="mensagem" label="Mensagem" sortable={false} />
+      <TextField
+        source="assuntoNotificacaoDTO"
+        label="Assunto"
+        sortable={true}
+      />
+      <TextField
+        source="mensagemNotificacaoDTO"
+        label="Mensagem"
+        sortable={false}
+      />
       <DateField
-        source="dataEnvio"
+        source="dataEnvioNotificacaoDTO"
         label="Data de Envio"
         sortable={true}
         showTime
@@ -105,7 +113,7 @@ const CustomDatagrid = () => {
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "Avisos/GetAll";
+    const resource = "Notificacoes/GetFeedCondominio";
     const sheetName = "Feedbacks";
 
     CustomExporter(resource, sheetName);

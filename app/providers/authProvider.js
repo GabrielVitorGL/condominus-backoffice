@@ -5,17 +5,17 @@ import { BASE_URL } from "../utils/constants";
 const authProvider = {
   login: ({ username, password }) => {
     const params = {
-      email: username,
-      passwordString: password,
+      emailUsuario: username,
+      senhaUsuario: password,
     };
 
     return axios
       .post(BASE_URL + "/Usuarios/Autenticar", params)
       .then((res) => {
-        const { token, nome, perfil } = res.data;
-        localStorage.setItem("accessToken", token);
-        localStorage.setItem("role", perfil);
-        localStorage.setItem("username", nome);
+        const { tokenUsuario, pessoaUsuario } = res.data;
+        localStorage.setItem("accessToken", tokenUsuario);
+        localStorage.setItem("role", pessoaUsuario.tipoPessoa);
+        localStorage.setItem("username", pessoaUsuario.nomePessoa);
       })
       .catch((error) => {
         console.error("Erro na autenticação: ", error);

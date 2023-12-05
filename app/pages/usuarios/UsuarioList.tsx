@@ -34,7 +34,7 @@ import { dataProvider } from "../../providers/dataProvider";
 const postFilters = [
   <SearchInput
     key="search"
-    source="nome"
+    source="nomeUsuarioDTO"
     placeholder="Buscar por nome"
     alwaysOn
   />,
@@ -64,7 +64,7 @@ const UserList = () => {
             </>
           }
           component="div"
-          resource={`Usuarios/GetAll`}
+          resource={`Usuarios/GetAllCondominio`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -103,10 +103,10 @@ const CustomDatagrid = () => {
       }
     >
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="nome" label="Nome" sortable={true} />
-      <TextField source="email" label="Email" sortable={false} />
+      <TextField source="nomeUsuarioDTO" label="Nome" sortable={true} />
+      <TextField source="emailUsuarioDTO" label="Email" sortable={false} />
       <DateField
-        source="dataAcesso"
+        source="dataAcessoUsuarioDTO"
         label="Data de Acesso"
         sortable={true}
         showTime
@@ -327,7 +327,7 @@ const RemoveButton = () => {
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "Usuarios/GetAll";
+    const resource = "Usuarios/GetAllCondominio";
     const sheetName = "Usuarios";
 
     CustomExporter(resource, sheetName);

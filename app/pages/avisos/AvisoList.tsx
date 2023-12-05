@@ -22,11 +22,7 @@ import {
   DialogContent,
   TextField as MUITextField,
 } from "@mui/material";
-import {
-  AddRounded,
-  EditRounded,
-  Campaign,
-} from "@mui/icons-material";
+import { AddRounded, EditRounded, Campaign } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../../utils/exporter";
@@ -37,7 +33,7 @@ import Alert from "../../components/Alert";
 const postFilters = [
   <SearchInput
     key="search"
-    source="assunto"
+    source="assuntoNotificacaoDTO"
     placeholder="Buscar por assunto"
     alwaysOn
   />,
@@ -68,7 +64,7 @@ const AdviceList = () => {
             </>
           }
           component="div"
-          resource={`Avisos/GetAll`}
+          resource={`Notificacoes/GetAvisosCondominio`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -107,10 +103,18 @@ const CustomDatagrid = () => {
       }
     >
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="assunto" label="Assunto" sortable={true} />
-      <TextField source="mensagem" label="Mensagem" sortable={false} />
+      <TextField
+        source="assuntoNotificacaoDTO"
+        label="Assunto"
+        sortable={true}
+      />
+      <TextField
+        source="mensagemNotificacaoDTO"
+        label="Mensagem"
+        sortable={false}
+      />
       <DateField
-        source="dataEnvio"
+        source="dataEnvioNotificacaoDTO"
         label="Data de Envio"
         sortable={true}
         showTime
@@ -457,7 +461,7 @@ const CreateAdviceButton = () => {
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "Avisos/GetAll";
+    const resource = "Notificacoes/GetAvisosCondominio";
     const sheetName = "Avisos";
 
     CustomExporter(resource, sheetName);

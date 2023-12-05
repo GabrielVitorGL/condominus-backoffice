@@ -36,13 +36,13 @@ import {
 const postFilters = [
   <SearchInput
     key="search"
-    source="numero" //!
+    source="numeroApartamentoDTO"
     placeholder="Buscar por apartamento"
     alwaysOn
   />,
   <SearchInput
     key="searchByPhoneNumber"
-    source="telefone"
+    source="telefoneApartamentoDTO"
     placeholder="Buscar por telefone"
     alwaysOn
   />,
@@ -75,7 +75,7 @@ const ApartmentList = () => {
             </>
           }
           component="div"
-          resource={`Apartamentos/GetAll`}
+          resource={`Apartamentos/GetAllCondominio`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -114,8 +114,8 @@ const CustomDatagrid = () => {
       }
     >
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="numero" label="Apartamento" sortable={true} />
-      <TextField source="telefone" label="Telefone" sortable={false} />
+      <TextField source="numeroApartamentoDTO" label="Apartamento" sortable={true} />
+      <TextField source="telefoneApartamentoDTO" label="Telefone" sortable={false} />
       {
         //!
       }
@@ -485,7 +485,7 @@ const CreateApartmentButton = () => {
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "Apartamentos/GetAll";
+    const resource = "Apartamentos/GetAllCondominio";
     const sheetName = "Apartamentos";
 
     CustomExporter(resource, sheetName);

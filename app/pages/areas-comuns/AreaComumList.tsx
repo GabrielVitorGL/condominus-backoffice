@@ -32,7 +32,7 @@ import Alert from "../../components/Alert";
 const postFilters = [
   <SearchInput
     key="search"
-    source="nome"
+    source="nomeAreaComumDTO"
     placeholder="Buscar por nome"
     alwaysOn
   />,
@@ -65,7 +65,7 @@ const CommonAreaList = () => {
             </>
           }
           component="div"
-          resource={`AreasComuns/GetAll`}
+          resource={`AreasComuns/GetAllCondominio`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -104,7 +104,7 @@ const CustomDatagrid = () => {
       }
     >
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="nome" label="Nome" sortable={true} />
+      <TextField source="nomeAreaComumDTO" label="Nome" sortable={true} />
     </Datagrid>
   );
 };
@@ -418,7 +418,7 @@ const CreateCommonAreaButton = () => {
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "AreasComuns/GetAll";
+    const resource = "AreasComuns/GetAllCondominio";
     const sheetName = "AreasComuns";
 
     CustomExporter(resource, sheetName);

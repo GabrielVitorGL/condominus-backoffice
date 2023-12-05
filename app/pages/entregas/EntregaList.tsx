@@ -41,13 +41,13 @@ import Alert from "../../components/Alert";
 const postFilters = [
   <SearchInput
     key="search"
-    source="destinatario"
+    source="destinatarioEntDTO"
     placeholder="Buscar por destinatário"
     alwaysOn
   />,
   <SearchInput
     key="searchByApto"
-    source="numeroApartamento"
+    source="numeroApartDTO"
     placeholder="Buscar por apartamento"
     alwaysOn
   />,
@@ -80,7 +80,7 @@ const DeliveryList = () => {
             </>
           }
           component="div"
-          resource={`Entregas/GetAll`}
+          resource={`Entregas/GetAllCondominio`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -120,14 +120,14 @@ const CustomDatagrid = () => {
       }
     >
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="destinatario" label="Destinatário" sortable={true} />
       <TextField
-        source="numeroApartamento"
-        label="Apartamento"
-        sortable={false}
+        source="destinatarioEntDTO"
+        label="Destinatário"
+        sortable={true}
       />
+      <TextField source="numeroApartDTO" label="Apartamento" sortable={false} />
       <DateField
-        source="dataEntrega"
+        source="dataEntregaEntDTO"
         label="Data de Entrega"
         sortable={true}
         showTime
@@ -139,10 +139,9 @@ const CustomDatagrid = () => {
           hour: "numeric",
           minute: "numeric",
         }}
-
       />
       <DateField
-        source="dataRetirada"
+        source="dataRetiradaEntDTO"
         label="Data de Retirada"
         sortable={true}
         showTime
@@ -710,7 +709,7 @@ const CustomDropdownMenu = () => {
   };
 
   const handleExportClick = () => {
-    const resource = "Entregas/GetAll";
+    const resource = "Entregas/GetAllCondominio";
     const sheetName = "Entregas";
 
     CustomExporter(resource, sheetName);
@@ -741,7 +740,7 @@ const CustomDropdownMenu = () => {
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "Entregas/GetAll";
+    const resource = "Entregas/GetAllCondominio";
     const sheetName = "Entregas";
 
     CustomExporter(resource, sheetName);

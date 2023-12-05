@@ -47,21 +47,21 @@ import {
 const postFilters = [
   <SearchInput
     key="search"
-    source="nome"
+    source="nomePessoaDTO"
     placeholder="Buscar por nome"
     className="w-48"
     alwaysOn
   />,
   <SearchInput
     key="searchByCpf"
-    source="cpf"
+    source="cpfPessoaDTO"
     placeholder="Buscar por CPF"
     className="w-48"
     alwaysOn
   />,
   <SearchInput
     key="searchByApto"
-    source="apartamento.numero"
+    source="numeroApartPessoaDTO"
     placeholder="Buscar por apartamento"
     alwaysOn
   />,
@@ -92,7 +92,7 @@ const AccountList = () => {
             </>
           }
           component="div"
-          resource={`Pessoas/GetMoradores`}
+          resource={`Pessoas/GetMoradoresCondominio`}
           perPage={999}
           pagination={false}
           filters={postFilters}
@@ -131,11 +131,11 @@ const CustomDatagrid = () => {
       }
     >
       <TextField source="id" label="Id" sortable={true} />
-      <TextField source="nome" label="Nome" sortable={true} />
-      <TextField source="telefone" label="Telefone" sortable={false} />
-      <TextField source="cpf" label="CPF" sortable={false} />
+      <TextField source="nomePessoaDTO" label="Nome" sortable={true} />
+      <TextField source="telefonePessoaDTO" label="Telefone" sortable={false} />
+      <TextField source="cpfPessoaDTO" label="CPF" sortable={false} />
       <TextField
-        source="apartamento.numero"
+        source="numeroApartPessoaDTO"
         label="Apartamento"
         sortable={true}
       />
@@ -175,10 +175,10 @@ const EditButton = () => {
     );
 
     if (morador !== undefined) {
-      setNome(morador.nome);
-      setCpf(morador.cpf);
-      setTelefone(morador.telefone);
-      setApartamento(morador.idApartamento);
+      setNome(morador.nomePessoaDTO);
+      setCpf(morador.cpfPessoaDTO);
+      setTelefone(morador.telefonePessoaDTO);
+      setApartamento(morador.numeroApartPessoaDTO);
     }
   }, [listContext.data, listContext.selectedIds, open]);
 
@@ -190,8 +190,7 @@ const EditButton = () => {
 
     const errors: Partial<Record<string, string>> = {};
 
-    if (!nome || !telefone) {
-      //! confirmar se vai checar idApartamento aqui
+    if (!nome || !telefone || !cpf || !apartamento) {
       setRequiredError("Este campo é obrigatório");
       return;
     }
@@ -221,19 +220,25 @@ const EditButton = () => {
       return;
     }
 
-    // const idApartamento = await getApartamento(
-    //   nApartamento,
-    //   setShowAlert,
-    //   setLoading
-    // );
+    const idApartamento = await getApartamento(
+      apartamento,
+      setShowAlert,
+      setLoading
+    );
+
+    if (!idApartamento) {
+      setLoading(false);
+      return;
+    }
 
     try {
       await dataProvider.update("Pessoas", {
         data: {
-          id: listContext.selectedIds[0],
-          nome: nome,
-          telefone: formattedPhoneNumber,
-          cpf: formattedCpf,
+          idPessoa: listContext.selectedIds[0],
+          nomePessoa: nome,
+          telefonePessoa: formattedPhoneNumber,
+          cpfPessoa: formattedCpf,
+          idApartamentoPessoa: idApartamento,
         },
       });
       handleClose();
@@ -323,7 +328,8 @@ const EditButton = () => {
               setApartamento(event.target.value);
             }}
             required
-            //! checar se vai validar aqui
+            error={!apartamento && !!requiredError}
+            helperText={getErrorMessage(apartamento)}
             className="w-full"
           />
         </DialogContent>
@@ -490,11 +496,11 @@ const CreateAccountButton = () => {
     try {
       await dataProvider.create("Pessoas", {
         data: {
-          nome: nome,
-          cpf: formatDocument(cpf || ""),
-          telefone: formatPhoneNumber(telefone || ""),
-          apartamento: apartamento, //!
-          perfil: "Morador",
+          nomePessoa: nome,
+          cpfPessoa: formatDocument(cpf || ""),
+          telefonePessoa: formatPhoneNumber(telefone || ""),
+          idApartamentoPessoa: idApartamento,
+          tipoPessoa: "Morador",
         },
       });
       handleClose();
@@ -618,7 +624,7 @@ const CreateAccountButton = () => {
 
 const CustomExportButton = () => {
   const handleExportClick = () => {
-    const resource = "Pessoas/GetMoradores";
+    const resource = "Pessoas/GetMoradoresCondominio";
     const sheetName = "Moradores";
 
     CustomExporter(resource, sheetName);
@@ -681,7 +687,7 @@ const CustomDropdownMenu = () => {
   };
 
   const handleExportClick = () => {
-    const resource = "Pessoas/GetMoradores";
+    const resource = "Pessoas/GetMoradoresCondominio";
     const sheetName = "Moradores";
 
     CustomExporter(resource, sheetName);
