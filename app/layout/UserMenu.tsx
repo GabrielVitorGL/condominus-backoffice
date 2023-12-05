@@ -105,14 +105,6 @@ const Root = styled("div", {
   },
 }));
 
-const defaultIcon = (
-  <div className="bg-indigo-700 w-8 h-8 rounded-full flex items-center justify-center">
-    <span className="text-white text-xl">
-      {localStorage.getItem("username")?.charAt(0)}
-    </span>
-  </div>
-);
-
 const defaultIcon2 = <AccountCircle className="!text-[28px]" />;
 
 const StyledMenu = styled(Menu)({
