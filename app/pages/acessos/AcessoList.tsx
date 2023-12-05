@@ -21,7 +21,7 @@ import {
   DialogContent,
   TextField as MUITextField,
 } from "@mui/material";
-import { AccountBox, EditRounded, Lock } from "@mui/icons-material";
+import { AccountBox, EditRounded, Lock, PersonAdd } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../../utils/exporter";
@@ -32,7 +32,10 @@ import {
   formatPhoneNumber,
   validatePhoneNumber,
 } from "@/app/utils/validators/validatePhoneNumber";
-import { formatDocument, validateDocument } from "@/app/utils/validators/validateDocument";
+import {
+  formatDocument,
+  validateDocument,
+} from "@/app/utils/validators/validateDocument";
 
 const postFilters = [
   <SearchInput
@@ -51,8 +54,8 @@ const postFilters = [
   />,
   <SearchInput
     key="searchByMorador"
-    source="nomePessoaDependenteDTO"
-    placeholder="Buscar por morador"
+    source="numeroApartamentoDependenteDTO"
+    placeholder="Buscar por apartamento"
     alwaysOn
     className="w-60"
   />,
@@ -61,7 +64,9 @@ const postFilters = [
 const AccessList = () => {
   return (
     <PrivatePage>
-      <NavigationHeader routePath={[{ icon: Lock, title: "Acessos" }]} />
+      <NavigationHeader
+        routePath={[{ icon: PersonAdd, title: "Visitantes" }]}
+      />
       <div
         style={{
           display: "flex",
@@ -70,7 +75,7 @@ const AccessList = () => {
           padding: "20px 32px",
         }}
       >
-        <span style={{ fontWeight: 700, fontSize: "26px" }}>Acessos</span>
+        <span style={{ fontWeight: 700, fontSize: "26px" }}>Visitantes</span>
         <div className="bg-main mt-1" style={{ height: "3px" }} />
 
         <StyledList
@@ -126,6 +131,11 @@ const CustomDatagrid = () => {
       <TextField
         source="nomePessoaDependenteDTO"
         label="Morador responsável"
+        sortable={true}
+      />
+      <TextField
+        source="numeroApartamentoDependenteDTO"
+        label="Apartamento"
         sortable={true}
       />
     </Datagrid>
@@ -235,7 +245,7 @@ const EditButton = () => {
       >
         <>
           <EditRounded fontSize="small" className="mr-2" />
-          Editar acesso
+          Editar visitante
         </>
       </ReactAdminButton>
       <Dialog
@@ -248,7 +258,7 @@ const EditButton = () => {
           id="alert-dialog-title"
           className="flex justify-center !text-2xl !mt-3"
         >
-          {"EDITAR ACESSO"}
+          {"EDITAR VISITANTE"}
         </DialogTitle>
         <DialogContent className="!py-4 !mb-2 !w-[500px]">
           <MUITextField
@@ -282,9 +292,7 @@ const EditButton = () => {
               setCpf(event.target.value);
             }}
             required
-            error={
-              (!cpf && !!requiredError) || !!validationErrors.cpf
-            }
+            error={(!cpf && !!requiredError) || !!validationErrors.cpf}
             helperText={getErrorMessage(cpf, validationErrors.cpf)}
             className="w-full"
           />
@@ -340,8 +348,8 @@ const RemoveButton = () => {
       mutationMode="pessimistic"
       confirmContent={
         listContext.selectedIds.length > 1
-          ? "Tem certeza que deseja excluir os acessos selecionados?"
-          : `Tem certeza que deseja excluir o acesso de ${
+          ? "Tem certeza que deseja excluir os visitantes selecionados?"
+          : `Tem certeza que deseja excluir o visitante ${
               nomeAcesso !== "" ? `"` + nomeAcesso + `"` : "selecionado"
             }?`
       }
@@ -353,7 +361,7 @@ const RemoveButton = () => {
 const CustomExportButton = () => {
   const handleExportClick = () => {
     const resource = "Dependentes/GetAllCondominio";
-    const sheetName = "Acessos";
+    const sheetName = "Visitantes";
 
     CustomExporter(resource, sheetName);
   };
@@ -391,8 +399,8 @@ const BottomAlert = ({
       text={
         showAlert === "confirmError"
           ? editar
-            ? "Ocorreu um erro ao editar o acesso. Por favor, tente novamente."
-            : "Ocorreu um erro ao criar o acesso. Por favor, tente novamente."
+            ? "Ocorreu um erro ao editar o visitante. Por favor, tente novamente."
+            : "Ocorreu um erro ao criar o visitante. Por favor, tente novamente."
           : "Ocorreu um erro. Favor tente novamente."
       }
       onClose={() => setShowAlert(undefined)}

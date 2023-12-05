@@ -10,6 +10,7 @@ import {
   useListContext,
   SearchInput,
   useRefresh,
+  FunctionField,
 } from "react-admin";
 
 import { styled } from "@mui/material/styles";
@@ -138,6 +139,16 @@ const CustomDatagrid = () => {
         source="numeroApartPessoaDTO"
         label="Apartamento"
         sortable={true}
+      />
+      <FunctionField
+        label="Morador cadastrado"
+        sortable={true}
+        className="w-20"
+        source="idUsuarioPessoaDTO"
+        render={(record: any) => {
+          const idUsuario = record.idUsuarioPessoaDTO;
+          return idUsuario ? `✔️` : "";
+        }}
       />
     </Datagrid>
   );
@@ -763,6 +774,9 @@ const StyledList = styled(List)({
     justifyContent: "center",
     alignItems: "center",
     fontSize: "17px",
+  },
+  "& .column-idUsuarioPessoaDTO": {
+    width: "210px",
   },
 });
 
