@@ -3,11 +3,9 @@ TO DO:
 Conferir //! e //TODO e console.log
 Usar API do sommee
 No login guardar id da pessoa no localStorage
-No login checar se tipo pessoa é sindico ou porteiro, e guardar no localStorage
-Usuário porteiro visualizar apenas página de entregas e acesso se houver
 Importar moradores por planilha
 Criação e download de planilha modelo
-
+Migrar para nova api
 
 
 
@@ -18,6 +16,8 @@ DOING:
 
 OK:
 
+Usuário porteiro visualizar apenas página de entregas e acesso se houver
+No login checar se tipo pessoa é sindico ou porteiro, e guardar no localStorage
 Colocar required em todas as edições
 Inverter área comum e morador na listagem de reservas
 Edição - acesso

@@ -18,6 +18,7 @@ export const UserMenu = (props: UserMenuProps) => {
       <Logout
         onClick={() => {
           localStorage.removeItem("accessToken");
+          localStorage.removeItem("role");
           localStorage.removeItem("username");
           router.replace("/login");
         }}

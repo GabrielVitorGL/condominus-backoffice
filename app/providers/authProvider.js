@@ -12,8 +12,9 @@ const authProvider = {
     return axios
       .post(BASE_URL + "/Usuarios/Autenticar", params)
       .then((res) => {
-        const { token, nome } = res.data;
+        const { token, nome, perfil } = res.data;
         localStorage.setItem("accessToken", token);
+        localStorage.setItem("role", perfil);
         localStorage.setItem("username", nome);
       })
       .catch((error) => {
@@ -24,6 +25,7 @@ const authProvider = {
 
   logout: () => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("role");
     localStorage.removeItem("username");
     return Promise.resolve();
   },
@@ -44,6 +46,7 @@ const authProvider = {
 
     // not logged in the API, so remove the token if exists
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("role");
     localStorage.removeItem("username");
     return Promise.reject();
   },

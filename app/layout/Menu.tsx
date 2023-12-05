@@ -95,38 +95,62 @@ const StyledMenuItem = muiStyled(MenuItem)(({ open, theme }: any) => ({
 const CustomMenu = () => {
   const router = useRouter();
 
+  const role = localStorage.getItem("role");
+
   return (
     <MenuContainer>
-      <CustomMenuItem
-        route="moradores"
-        title="Moradores"
-        icon={<PersonIcon />}
-      />
-      <CustomMenuItem route="usuarios" title="Usuários" icon={<AccountBox />} />
-      <CustomMenuItem
-        route="apartamentos"
-        title="Apartamentos"
-        icon={<Apartment />}
-      />
+      {role === "Admin" && (
+        <>
+          <CustomMenuItem
+            route="moradores"
+            title="Moradores"
+            icon={<PersonIcon />}
+          />
+          <CustomMenuItem
+            route="usuarios"
+            title="Usuários"
+            icon={<AccountBox />}
+          />
+          <CustomMenuItem
+            route="apartamentos"
+            title="Apartamentos"
+            icon={<Apartment />}
+          />
+        </>
+      )}
+
       <CustomMenuItem
         route="entregas"
         title="Entregas"
         icon={<LocalShippingIcon />}
       />
       <CustomMenuItem route="acesso" title="Acesso" icon={<Lock />} />
-      <CustomMenuItem
-        route="reservas"
-        title="Reservas"
-        icon={<CalendarMonthIcon />}
-      />
-      <CustomMenuItem
-        route="areas"
-        title="Áreas Comuns"
-        icon={<CelebrationIcon />}
-      />
+      {role === "Admin" && (
+        <>
+          <CustomMenuItem
+            route="reservas"
+            title="Reservas"
+            icon={<CalendarMonthIcon />}
+          />
+          <CustomMenuItem
+            route="areas"
+            title="Áreas Comuns"
+            icon={<CelebrationIcon />}
+          />
 
-      <CustomMenuItem route="avisos" title="Avisos" icon={<CampaignIcon />} />
-      <CustomMenuItem route="feedbacks" title="Feedbacks" icon={<Feedback />} />
+          <CustomMenuItem
+            route="avisos"
+            title="Avisos"
+            icon={<CampaignIcon />}
+          />
+          <CustomMenuItem
+            route="feedbacks"
+            title="Feedbacks"
+            icon={<Feedback />}
+          />
+        </>
+      )}
+
       <EmptySpace />
       <CustomMenuItem
         route="logout"
@@ -135,6 +159,7 @@ const CustomMenu = () => {
         onClick={() => {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("username");
+          localStorage.removeItem("role");
           router.replace("/login");
         }}
       />
