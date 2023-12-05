@@ -116,9 +116,6 @@ const CustomDatagrid = () => {
       <TextField source="id" label="Id" sortable={true} />
       <TextField source="numeroApartamentoDTO" label="Apartamento" sortable={true} />
       <TextField source="telefoneApartamentoDTO" label="Telefone" sortable={false} />
-      {
-        //!
-      }
     </Datagrid>
   );
 };
@@ -154,8 +151,8 @@ const EditButton = () => {
     );
 
     if (apartamento !== undefined) {
-      setTelefone(apartamento.telefone);
-      setApartamento(apartamento.numero); //!
+      setTelefone(apartamento.telefoneApartamentoDTO);
+      setApartamento(apartamento.numeroApartamentoDTO);
     }
   }, [listContext.data, listContext.selectedIds, open]);
 
@@ -189,9 +186,9 @@ const EditButton = () => {
     try {
       await dataProvider.update("Apartamentos", {
         data: {
-          id: listContext.selectedIds[0],
-          telefone: formatPhoneNumber(telefone),
-          numero: apartamento, //!
+          idApart: listContext.selectedIds[0],
+          telefoneApart: formatPhoneNumber(telefone),
+          numeroApart: apartamento,
         },
       });
       handleClose();
@@ -306,7 +303,7 @@ const RemoveButton = () => {
   let nApartamento = "";
 
   if (typeof apartamento !== "undefined") {
-    nApartamento = apartamento.numero;
+    nApartamento = apartamento.numeroApartamentoDTO;
   }
 
   return (
@@ -385,9 +382,8 @@ const CreateApartmentButton = () => {
     try {
       await dataProvider.create("Apartamentos", {
         data: {
-          telefone: formatPhoneNumber(telefone || ""),
-          numero: apartamento,
-          idCondominio: 1, //!
+          telefoneApart: formatPhoneNumber(telefone || ""),
+          numeroApart: apartamento,
         },
       });
       handleClose();

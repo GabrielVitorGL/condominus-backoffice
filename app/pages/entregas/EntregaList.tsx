@@ -207,7 +207,7 @@ const MarkAsWithdrawButton = () => {
       listContext.selectedIds.includes(x.id)
     );
 
-    const notWithdraw = entregas.every((x) => x.dataRetirada == null);
+    const notWithdraw = entregas.every((x) => x.dataRetiradaEntDTO == null);
 
     return notWithdraw;
   };
@@ -229,8 +229,8 @@ const MarkAsWithdrawButton = () => {
       const updatePromises = listContext.selectedIds.map(async (id) => {
         await dataProvider.update("Entregas", {
           data: {
-            id,
-            dataRetirada: dataHoraLocal,
+            idEnt: id,
+            dataRetiradaEnt: dataHoraLocal,
           },
         });
       });
@@ -337,25 +337,8 @@ const EditButton = () => {
       );
 
       if (entrega !== undefined) {
-        setDestinatario(entrega.destinatario);
-
-        let nApartamento = "";
-        try {
-          nApartamento = await dataProvider.getNumeroApartamentoById(
-            entrega.idApartamento
-          );
-        } catch (error) {
-          console.log(error);
-          setShowAlert("findApartamentoError");
-          setLoading(false);
-          return;
-        }
-        if (!nApartamento) {
-          setShowAlert("findApartamentoError");
-          setLoading(false);
-          return;
-        }
-        setNApartamento(nApartamento);
+        setDestinatario(entrega.destinatarioEntDTO);
+        setNApartamento(entrega.numeroApartDTO);
       }
     }
     fetchData();
@@ -411,9 +394,9 @@ const EditButton = () => {
     try {
       await dataProvider.update("Entregas", {
         data: {
-          id: listContext.selectedIds[0],
-          destinatario: destinatario,
-          idApartamento: idApartamento,
+          idEnt: listContext.selectedIds[0],
+          destinatarioEnt: destinatario,
+          idApartamentoEnt: idApartamento,
         },
       });
       handleClose();
@@ -600,9 +583,9 @@ const CreateDeliveryButton = () => {
     try {
       await dataProvider.create("Entregas", {
         data: {
-          destinatario: destinatario,
-          dataEntrega: dataHoraLocal,
-          idApartamento: idApartamento,
+          destinatarioEnt: destinatario,
+          dataEntregaEnt: dataHoraLocal,
+          idApartamentoEnt: idApartamento,
         },
       });
       handleClose();

@@ -32,6 +32,7 @@ import {
   formatPhoneNumber,
   validatePhoneNumber,
 } from "@/app/utils/validators/validatePhoneNumber";
+import { formatDocument, validateDocument } from "@/app/utils/validators/validateDocument";
 
 const postFilters = [
   <SearchInput
@@ -138,7 +139,7 @@ const EditButton = () => {
 
   const [morador, setMorador] = React.useState("");
   const [nome, setNome] = React.useState("");
-  const [telefone, setTelefone] = React.useState("");
+  const [cpf, setCpf] = React.useState("");
 
   const [isLoading, setLoading] = React.useState(false);
 
@@ -162,9 +163,9 @@ const EditButton = () => {
     );
 
     if (acesso !== undefined) {
-      setMorador(acesso.pessoa.nome);
-      setNome(acesso.nome);
-      setTelefone(acesso.telefone);
+      setMorador(acesso.nomePessoaDependenteDTO);
+      setNome(acesso.nomeDependenteDTO);
+      setCpf(acesso.cpfDependenteDTO);
     }
   }, [listContext.data, listContext.selectedIds, open]);
 
@@ -179,8 +180,8 @@ const EditButton = () => {
       return;
     }
 
-    if (!validatePhoneNumber(formatPhoneNumber(telefone))) {
-      errors.telefone = "Telefone inválido";
+    if (!validateDocument(formatDocument(cpf))) {
+      errors.cpf = "CPF inválido";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -203,9 +204,9 @@ const EditButton = () => {
     try {
       await dataProvider.update("Dependentes", {
         data: {
-          id: listContext.selectedIds[0],
-          nome: nome,
-          telefone: formatPhoneNumber(telefone),
+          idDependente: listContext.selectedIds[0],
+          nomeDependente: nome,
+          cpfDependente: formatDocument(cpf),
         },
       });
       handleClose();
@@ -275,16 +276,16 @@ const EditButton = () => {
           />
           <MUITextField
             variant="outlined"
-            label="Telefone"
-            value={telefone}
+            label="CPF"
+            value={cpf}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setTelefone(event.target.value);
+              setCpf(event.target.value);
             }}
             required
             error={
-              (!telefone && !!requiredError) || !!validationErrors.telefone
+              (!cpf && !!requiredError) || !!validationErrors.cpf
             }
-            helperText={getErrorMessage(telefone, validationErrors.telefone)}
+            helperText={getErrorMessage(cpf, validationErrors.cpf)}
             className="w-full"
           />
         </DialogContent>
@@ -331,7 +332,7 @@ const RemoveButton = () => {
   let nomeAcesso = "";
 
   if (typeof acesso !== "undefined") {
-    nomeAcesso = acesso.nome;
+    nomeAcesso = acesso.nomeDependenteDTO;
   }
 
   return (

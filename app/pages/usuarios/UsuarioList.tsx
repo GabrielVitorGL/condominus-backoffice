@@ -153,8 +153,8 @@ const EditButton = () => {
     );
 
     if (usuario !== undefined) {
-      setNome(usuario.nome);
-      setEmail(usuario.email);
+      setNome(usuario.nomeUsuarioDTO);
+      setEmail(usuario.emailUsuarioDTO);
     }
   }, [listContext.data, listContext.selectedIds, open]);
 
@@ -191,11 +191,10 @@ const EditButton = () => {
     }
 
     try {
-      await dataProvider.update("Usuarios", {
+      await dataProvider.update("Usuarios/AtualizarUsuario", {
         data: {
-          id: listContext.selectedIds[0],
-          nome: nome,
-          email: email,
+          idUsuario: listContext.selectedIds[0],
+          emailUsuario: email,
         },
       });
       handleClose();
@@ -307,7 +306,7 @@ const RemoveButton = () => {
   let nomeUsuario = "";
 
   if (typeof usuario !== "undefined") {
-    nomeUsuario = usuario.nome;
+    nomeUsuario = usuario.nomeUsuarioDTO;
   }
 
   return (

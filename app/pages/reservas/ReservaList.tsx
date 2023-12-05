@@ -128,7 +128,6 @@ const CustomDatagrid = () => {
         sortable={true}
       />
       <DateField
-        //!source="dataInicio"
         source="dataHoraInicioPessAreaDTO"
         label="Data Inicial"
         showTime
@@ -168,6 +167,8 @@ const EditButton = () => {
 
   const [dataInicial, setDataInicial] = React.useState<Dayjs | null>(null);
   const [dataFinal, setDataFinal] = React.useState<Dayjs | null>(null);
+  const [idPessoa, setIdPessoa] = React.useState<number>(0);
+  const [idAreaComum, setIdAreaComum] = React.useState<number>(0);
 
   const [isLoading, setLoading] = React.useState(false);
 
@@ -188,8 +189,10 @@ const EditButton = () => {
       );
 
       if (reserva !== undefined) {
-        setDataInicial(dayjs(reserva.data)); //!
-        setDataFinal(dayjs(reserva.data)); //!
+        setDataInicial(dayjs(reserva.dataHoraInicioPessAreaDTO));
+        setDataFinal(dayjs(reserva.dataHoraFimPessAreaDTO));
+        setIdPessoa(reserva.idPessoaPessAreaDTO);
+        setIdAreaComum(reserva.idAreaComumPessAreaDTO);
       }
     }
     fetchData();
@@ -228,12 +231,32 @@ const EditButton = () => {
       return;
     }
 
+    let dataInicialLocal;
+    let dataFinalLocal;
+    if (dataInicial && dataFinal) {
+      const dataInicialDate = dataInicial.toDate();
+      const deslocamentoMinutos = dataInicialDate.getTimezoneOffset();
+
+      // Criar uma nova data ajustada para o fuso horário local
+      dataInicialLocal = new Date(
+        dataInicialDate.getTime() - deslocamentoMinutos * 60000
+      );
+
+      const dataFinalDate = dataFinal.toDate();
+      const deslocamentoMinutosF = dataFinalDate.getTimezoneOffset();
+      dataFinalLocal = new Date(
+        dataFinalDate.getTime() - deslocamentoMinutosF * 60000
+      );
+    }
+
     try {
-      await dataProvider.update("Reservas", {
+      await dataProvider.update("PessoasAreasComuns", {
         data: {
-          id: listContext.selectedIds[0],
-          data: dataInicial,
-          //! dataFinal
+          idPessArea: listContext.selectedIds[0],
+          idAreaComumPessArea: idAreaComum,
+          idPessoaPessArea: idPessoa,
+          dataHoraInicioPessArea: dataInicialLocal,
+          dataHoraFimPessArea: dataFinalLocal,
         },
       });
       handleClose();
@@ -462,14 +485,33 @@ const CreateReservationButton = () => {
       return;
     }
 
+    let dataInicialLocal;
+    let dataFinalLocal;
+    if (dataInicial && dataFinal) {
+      const dataInicialDate = dataInicial.toDate();
+      const deslocamentoMinutos = dataInicialDate.getTimezoneOffset();
+
+      // Criar uma nova data ajustada para o fuso horário local
+      dataInicialLocal = new Date(
+        dataInicialDate.getTime() - deslocamentoMinutos * 60000
+      );
+
+      const dataFinalDate = dataFinal.toDate();
+      const deslocamentoMinutosF = dataFinalDate.getTimezoneOffset();
+      dataFinalLocal = new Date(
+        dataFinalDate.getTime() - deslocamentoMinutosF * 60000
+      );
+    }
+
     try {
-      await dataProvider.create("Reservas", {
+      await dataProvider.create("PessoasAreasComuns", {
         data: {
-          idPessoa: idPessoa,
-          data: dataInicial,
-          //! dataInicial: dataInicial,
-          //! dataFinal: dataFinal,
-          idAreaComum: idAreaComum ? parseInt(idAreaComum, 10) : undefined,
+          idPessoaPessArea: idPessoa,
+          dataHoraInicioPessArea: dataInicialLocal,
+          dataHoraFimPessArea: dataFinalLocal,
+          idAreaComumPessArea: idAreaComum
+            ? parseInt(idAreaComum, 10)
+            : undefined,
         },
       });
       handleClose();
@@ -493,7 +535,7 @@ const CreateReservationButton = () => {
 
     async function fetchData() {
       const response = await dataProvider.getList(
-        "PessoasAreasComuns/GetAllCondominio"
+        "AreasComuns/GetAllCondominio"
       );
       setAreasComuns(response.data);
       console.log(response.data);
@@ -609,8 +651,11 @@ const CreateReservationButton = () => {
             >
               <option aria-label="None" className="hidden" value="" />
               {areasComuns.map((areaComum) => (
-                <MenuItem key={areaComum.id} value={String(areaComum.id)}>
-                  {areaComum.nome}
+                <MenuItem
+                  key={areaComum.nomeAreaComumDTO}
+                  value={String(areaComum.id)}
+                >
+                  {areaComum.nomeAreaComumDTO}
                 </MenuItem>
               ))}
             </Select>

@@ -376,7 +376,7 @@ const RemoveButton = () => {
   let nomeMorador = "";
 
   if (typeof morador !== "undefined") {
-    nomeMorador = morador.nome;
+    nomeMorador = morador.nomePessoaDTO;
   }
 
   return (

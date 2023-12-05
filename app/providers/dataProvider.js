@@ -240,7 +240,7 @@ export const dataProvider = {
     return new Promise((resolve, reject) => {
       axios.get(url, options).then((res) => {
         const pessoa = res.data.find(
-          (p) => p.cpf.toLowerCase() === formattedCpf.toLowerCase()
+          (p) => p.cpfPessoaDTO.toLowerCase() === formattedCpf.toLowerCase()
         );
         try {
           resolve(pessoa.id);
@@ -288,13 +288,13 @@ export const dataProvider = {
     } else if (resource == "entrega" || resource == "entregas") {
       formattedResource = "Entregas";
     } else if (resource == "reserva" || resource == "reservas") {
-      formattedResource = "Reservas";
+      formattedResource = "PessoasAreasComuns";
     } else if (resource == "aviso" || resource == "avisos") {
-      formattedResource = "Avisos";
+      formattedResource = "Notificacoes";
     } else if (resource == "área comum" || resource == "áreas comuns") {
       formattedResource = "AreasComuns";
     } else if (resource == "feedback" || resource == "feedbacks") {
-      //! formattedResource = "Feedbacks";
+      formattedResource = "Notificacoes";
       formattedResource = "AreasComuns";
     } else if (resource == "apartamento" || resource == "apartamentos") {
       formattedResource = "Apartamentos";

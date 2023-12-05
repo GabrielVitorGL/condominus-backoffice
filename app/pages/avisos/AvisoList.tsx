@@ -156,8 +156,8 @@ const EditButton = () => {
     );
 
     if (aviso !== undefined) {
-      setAssunto(aviso.assunto);
-      setMensagem(aviso.mensagem);
+      setAssunto(aviso.assuntoNotificacaoDTO);
+      setMensagem(aviso.mensagemNotificacaoDTO);
     }
   }, [listContext.data, listContext.selectedIds, open]);
 
@@ -190,11 +190,11 @@ const EditButton = () => {
     }
 
     try {
-      await dataProvider.update("Avisos", {
+      await dataProvider.update("Notificacoes", {
         data: {
-          id: listContext.selectedIds[0],
-          assunto: assunto,
-          mensagem: mensagem,
+          idNotificacao: listContext.selectedIds[0],
+          assuntoNotificacao: assunto,
+          mensagemNotificacao: mensagem,
         },
       });
       handleClose();
@@ -361,11 +361,12 @@ const CreateAdviceButton = () => {
     );
 
     try {
-      await dataProvider.create("Avisos", {
+      await dataProvider.create("Notificacoes", {
         data: {
-          assunto: assunto,
-          mensagem: mensagem,
-          dataEnvio: dataHoraLocal,
+          assuntoNotificacao: assunto,
+          mensagemNotificacao: mensagem,
+          dataEnvioNotificacao: dataHoraLocal,
+          tipoNotificacao: "Aviso",
         },
       });
       handleClose();

@@ -136,7 +136,7 @@ const EditButton = () => {
     );
 
     if (areaComum !== undefined) {
-      setNome(areaComum.nome);
+      setNome(areaComum.nomeAreaComumDTO);
     }
   }, [listContext.data, listContext.selectedIds, open]);
 
@@ -179,8 +179,8 @@ const EditButton = () => {
     try {
       await dataProvider.update("AreasComuns", {
         data: {
-          id: listContext.selectedIds[0],
-          nome: nome,
+          idAreaComum: listContext.selectedIds[0],
+          nomeAreaComum: nome,
         },
       });
       handleClose();
@@ -335,7 +335,7 @@ const CreateCommonAreaButton = () => {
     try {
       await dataProvider.create("AreasComuns", {
         data: {
-          nome: nome,
+          nomeAreaComum: nome,
         },
       });
       handleClose();

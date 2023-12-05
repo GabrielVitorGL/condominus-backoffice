@@ -51,7 +51,7 @@ const FeedbackList = () => {
             </>
           }
           component="div"
-          resource={`Notificacoes/GetFeedCondominio`} //! alterar aqui
+          resource={`Notificacoes/GetFeedCondominio`}
           perPage={999}
           pagination={false}
           filters={postFilters}
