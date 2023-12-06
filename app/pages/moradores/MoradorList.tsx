@@ -141,7 +141,7 @@ const CustomDatagrid = () => {
         sortable={true}
       />
       <FunctionField
-        label="Morador cadastrado"
+        label="Usuário cadastrado"
         sortable={true}
         className="w-20"
         source="idUsuarioPessoaDTO"
