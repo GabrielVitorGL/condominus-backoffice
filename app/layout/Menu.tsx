@@ -22,7 +22,7 @@ import {
   Apartment,
   Feedback,
   Lock,
-  PersonAdd,
+  GroupAdd,
 } from "@mui/icons-material";
 
 interface CustomMenuItemProps extends MenuItemProps {
@@ -133,7 +133,7 @@ const CustomMenu = () => {
       <CustomMenuItem
         route="visitantes"
         title="Visitantes"
-        icon={<PersonAdd />}
+        icon={<GroupAdd />}
       />
       {role === "Admin" && (
         <>

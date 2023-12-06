@@ -21,7 +21,7 @@ import {
   DialogContent,
   TextField as MUITextField,
 } from "@mui/material";
-import { AccountBox, EditRounded, Lock, PersonAdd } from "@mui/icons-material";
+import { AccountBox, EditRounded, Lock, GroupAdd } from "@mui/icons-material";
 import PrivatePage from "@/app/components/PrivatePage";
 import NavigationHeader from "@/app/components/NavigationHeader";
 import CustomExporter from "../../utils/exporter";
@@ -64,9 +64,7 @@ const postFilters = [
 const AccessList = () => {
   return (
     <PrivatePage>
-      <NavigationHeader
-        routePath={[{ icon: PersonAdd, title: "Visitantes" }]}
-      />
+      <NavigationHeader routePath={[{ icon: GroupAdd, title: "Visitantes" }]} />
       <div
         style={{
           display: "flex",
