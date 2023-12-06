@@ -90,7 +90,12 @@ function LoginContent({
       return;
     }
 
-    router.push("/moradores");
+    const role = localStorage.getItem("role");
+    if (role == "Porteiro") {
+      router.push("/entregas");
+    } else {
+      router.push("/moradores");
+    }
   };
 
   return (
