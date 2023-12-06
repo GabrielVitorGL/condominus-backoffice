@@ -135,13 +135,13 @@ const CustomMenu = () => {
         title="Visitantes"
         icon={<GroupAdd />}
       />
+      <CustomMenuItem
+        route="reservas"
+        title="Reservas"
+        icon={<CalendarMonthIcon />}
+      />
       {role === "Admin" && (
         <>
-          <CustomMenuItem
-            route="reservas"
-            title="Reservas"
-            icon={<CalendarMonthIcon />}
-          />
           <CustomMenuItem
             route="areas"
             title="Áreas Comuns"
